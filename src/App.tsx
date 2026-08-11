@@ -1,12 +1,11 @@
 import { Route, Switch } from 'wouter';
-import { HomePage } from './pages/HomePage';
+import { AssistantPage } from './pages/AssistantPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
-// Здесь живут только маршруты. Сами экраны складывай в src/pages/.
 export default function App() {
   return (
     <Switch>
-      <Route path="/" component={HomePage} />
+      <Route path="/" component={AssistantPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
