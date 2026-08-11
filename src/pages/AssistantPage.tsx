@@ -3,8 +3,9 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatWindow } from '../components/ChatWindow';
 import { ChatMessage } from '../components/MessageBubble';
 import { PromptQuickActions } from '../components/PromptQuickActions';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { SectionHeader } from '../components/SectionHeader';
 import { askBusinessAssistant } from '../lib/ai';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 function createMessage(role: ChatMessage['role'], text: string): ChatMessage {
   return {
@@ -43,14 +44,7 @@ export function AssistantPage() {
   return (
     <main className="assistant-shell">
       <section className="assistant-panel">
-        <header className="assistant-header">
-          <div>
-            <p className="eyebrow">AI-кабинет</p>
-            <h1>Ассистент для малого бизнеса</h1>
-          </div>
-          <span className="status-pill">MVP</span>
-        </header>
-
+        <SectionHeader subtitle="Задай вопрос, попроси текст или собери план действий." title="Чат с ИИ" />
         <ChatWindow isLoading={isLoading} messages={messages} />
 
         {error && <p className="alert">{error}</p>}
