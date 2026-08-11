@@ -1,4 +1,5 @@
 import { Route, Switch } from 'wouter';
+import { AdsPage } from './pages/AdsPage';
 import { AssistantPage } from './pages/AssistantPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -11,6 +12,7 @@ export default function App() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/ads" component={AdsPage} />
       <Route path="/chat" component={AssistantPage} />
       <Route path="/rent" component={RentPage} />
       <Route path="/payments" component={PaymentsPage} />

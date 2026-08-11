@@ -1,0 +1,81 @@
+.ads-page {
+  width: min(100%, 860px);
+}
+
+.ad-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ad-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ad-form input,
+.ad-form textarea {
+  width: 100%;
+  padding: 12px;
+  background: #151515;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+}
+
+.ad-form textarea {
+  resize: vertical;
+}
+
+.ad-form input[type='file'] {
+  color: var(--muted);
+}
+
+.ad-preview {
+  display: grid;
+  gap: 14px;
+}
+
+.ad-preview__frame {
+  padding: 12px;
+  background: #101010;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.ad-preview__frame img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.ad-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ad-actions button {
+  min-height: 46px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 760;
+}
+
+.ad-actions button:nth-child(3) {
+  background: #242424;
+  color: #ffb9b9;
+}
+
+@media (max-width: 560px) {
+  .ad-actions {
+    grid-template-columns: 1fr;
+  }
+}

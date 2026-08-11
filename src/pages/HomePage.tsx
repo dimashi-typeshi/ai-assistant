@@ -2,6 +2,7 @@ import { AppTile } from '../components/AppTile';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
+  { href: '/ads', icon: 'AD', label: 'Создать рекламу', text: 'Баннер для Instagram' },
   { href: '/rent', icon: 'AR', label: 'Аренда', text: 'Сроки, суммы, объекты' },
   { href: '/payments', icon: '₸', label: 'Платежи', text: 'Оплаты и напоминания' },
   { href: '/requests', icon: '→', label: 'Заявки', text: 'Задачи и обращения' },
