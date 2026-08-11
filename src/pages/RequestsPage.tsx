@@ -1,17 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Auth } from '../components/Auth';
 import { RequestCard } from '../components/RequestCard';
 import { RequestForm } from '../components/RequestForm';
+import { RequestsCalendar } from '../components/RequestsCalendar';
+import { RequestsDayList } from '../components/RequestsDayList';
 import { SectionHeader } from '../components/SectionHeader';
 import { RequestItem, RequestStatus, createRequest, deleteRequest, loadRequests, updateRequest } from '../lib/requests';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function RequestsPage() {
   const [requests, setRequests] = useState<RequestItem[]>([]);
+  const [selectedDate, setSelectedDate] = useState(todayKey());
+  const [selectedRequestId, setSelectedRequestId] = useState('');
   const [isReady, setIsReady] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState('');
+
+  const dayRequests = useMemo(
+    () => requests.filter((request) => request.deadline_at?.slice(0, 10) === selectedDate),
+    [requests, selectedDate],
+  );
+  const selectedRequest = requests.find((request) => request.id === selectedRequestId) ?? dayRequests[0];
 
   async function refresh() {
     const { data, error } = await loadRequests();
@@ -48,24 +62,26 @@ export function RequestsPage() {
 
   async function remove(id: string) {
     await run(() => deleteRequest(id));
+    setSelectedRequestId('');
   }
 
   return (
     <main className="mobile-app-shell">
       <section className="section-page requests-page">
-        <SectionHeader subtitle="Создавай заявки, ставь дедлайны и веди историю записей." title="Заявки" />
+        <SectionHeader subtitle="Смотри дедлайны в календаре и быстро переходи к выполнению." title="Заявки" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth />}
         {isSignedIn && (
           <>
             <RequestForm disabled={isBusy} onCreate={add} />
             {error && <p className="alert">{error}</p>}
-            <div className="requests-list">
-              {requests.map((request) => (
-                <RequestCard key={request.id} onDelete={remove} onUpdate={change} request={request} />
-              ))}
-              {requests.length === 0 && <p className="empty-state">Пока нет заявок. Создай первую выше.</p>}
-            </div>
+            <RequestsCalendar requests={requests} selectedDate={selectedDate} onSelectDate={(date) => { setSelectedDate(date); setSelectedRequestId(''); }} />
+            <RequestsDayList requests={dayRequests} selectedId={selectedRequest?.id ?? ''} onSelect={setSelectedRequestId} onUpdate={change} />
+            {selectedRequest ? (
+              <RequestCard key={selectedRequest.id} onDelete={remove} onUpdate={change} request={selectedRequest} />
+            ) : (
+              <p className="empty-state">Выбери дату с дедлайном или создай новую заявку.</p>
+            )}
           </>
         )}
       </section>

@@ -16,7 +16,7 @@ function toInputValue(value: string | null) {
 }
 
 export function RequestCard({ request, onDelete, onUpdate }: RequestCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const deadlineClass = getDeadlineState(request) === 'overdue' ? ' request-card--overdue' : '';
 
   async function changeStatus(status: RequestStatus) {
@@ -36,6 +36,12 @@ export function RequestCard({ request, onDelete, onUpdate }: RequestCardProps) {
         </div>
         <DeadlineBadge request={request} />
       </div>
+
+      {request.status === 'new' && (
+        <button className="primary-wide" onClick={() => void changeStatus('in_progress')} type="button">
+          Начать выполнение
+        </button>
+      )}
 
       <div className="request-fields">
         <label>

@@ -1,0 +1,147 @@
+.calendar-panel,
+.day-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 14px;
+  background: #121212;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-header h2,
+.day-list h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.calendar-header span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-weekdays span {
+  color: var(--muted-soft);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.calendar-day {
+  display: grid;
+  min-height: 54px;
+  padding: 8px;
+  place-items: center;
+  background: #181818;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+}
+
+.calendar-day--empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.calendar-day:hover:not(.calendar-day--empty),
+.calendar-day--selected {
+  border-color: rgba(79, 140, 255, 0.44);
+  background: var(--accent-soft);
+}
+
+.calendar-day--overdue {
+  border-color: rgba(255, 111, 111, 0.38);
+}
+
+.calendar-day strong {
+  min-width: 20px;
+  padding: 2px 6px;
+  background: var(--accent);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 11px;
+}
+
+.calendar-day--overdue strong {
+  background: #ff6f6f;
+}
+
+.day-request {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background: #181818;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.day-request--overdue {
+  border-color: rgba(255, 111, 111, 0.42);
+}
+
+.day-request__main {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+
+.day-request__main.active span {
+  color: #cfe0ff;
+}
+
+.day-request__main small,
+.day-request__main em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.start-button,
+.primary-wide {
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 760;
+}
+
+.start-button {
+  grid-column: 1 / -1;
+  padding: 10px 12px;
+}
+
+.primary-wide {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px;
+}
+
+@media (max-width: 520px) {
+  .calendar-panel,
+  .day-list {
+    padding: 10px;
+  }
+
+  .calendar-day {
+    min-height: 46px;
+    padding: 6px;
+  }
+}

@@ -6,6 +6,7 @@ import './styles/mobile-app.css';
 import './styles/assistant.css';
 import './styles/chat.css';
 import './styles/requests.css';
+import './styles/requests-calendar.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
