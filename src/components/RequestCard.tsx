@@ -1,0 +1,63 @@
+import { useState } from 'react';
+import { DeadlineBadge, getDeadlineState } from './DeadlineBadge';
+import { RequestNotes } from './RequestNotes';
+import { RequestItem, RequestStatus } from '../lib/requests';
+
+type RequestCardProps = {
+  request: RequestItem;
+  onDelete: (id: string) => Promise<void>;
+  onUpdate: (id: string, status: RequestStatus, deadlineAt: string | null) => Promise<void>;
+};
+
+function toInputValue(value: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+export function RequestCard({ request, onDelete, onUpdate }: RequestCardProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const deadlineClass = getDeadlineState(request) === 'overdue' ? ' request-card--overdue' : '';
+
+  async function changeStatus(status: RequestStatus) {
+    await onUpdate(request.id, status, request.deadline_at);
+  }
+
+  async function changeDeadline(value: string) {
+    await onUpdate(request.id, request.status, value ? new Date(value).toISOString() : null);
+  }
+
+  return (
+    <article className={`request-card${deadlineClass}`}>
+      <div className="request-card__top">
+        <div>
+          <h2>{request.title}</h2>
+          <p>Создано: {new Date(request.created_at).toLocaleDateString('ru-RU')}</p>
+        </div>
+        <DeadlineBadge request={request} />
+      </div>
+
+      <div className="request-fields">
+        <label>
+          Статус
+          <select onChange={(event) => void changeStatus(event.target.value as RequestStatus)} value={request.status}>
+            <option value="new">Новая</option>
+            <option value="in_progress">В работе</option>
+            <option value="done">Готово</option>
+          </select>
+        </label>
+        <label>
+          Дедлайн
+          <input onChange={(event) => void changeDeadline(event.target.value)} type="datetime-local" value={toInputValue(request.deadline_at)} />
+        </label>
+      </div>
+
+      <div className="request-actions">
+        <button onClick={() => setIsOpen((current) => !current)} type="button">{isOpen ? 'Скрыть записи' : 'Записи'}</button>
+        <button onClick={() => void onDelete(request.id)} type="button">Удалить</button>
+      </div>
+
+      {isOpen && <RequestNotes requestId={request.id} />}
+    </article>
+  );
+}

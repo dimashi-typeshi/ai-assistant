@@ -1,0 +1,156 @@
+.requests-page {
+  width: min(100%, 760px);
+}
+
+.request-form,
+.note-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.request-form {
+  grid-template-columns: 1fr 220px auto;
+}
+
+.request-form input,
+.request-fields input,
+.request-fields select,
+.note-form textarea {
+  width: 100%;
+  padding: 12px;
+  background: #151515;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+}
+
+.request-form button,
+.note-form button,
+.request-actions button {
+  padding: 11px 14px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 760;
+}
+
+.requests-list {
+  display: grid;
+  gap: 12px;
+}
+
+.request-card {
+  padding: 16px;
+  background: linear-gradient(180deg, #1a1a1a, #141414);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.request-card--overdue {
+  border-color: rgba(255, 111, 111, 0.46);
+  box-shadow: 0 14px 34px rgba(255, 80, 80, 0.1);
+}
+
+.request-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.request-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.request-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.deadline-badge {
+  align-self: flex-start;
+  padding: 6px 9px;
+  background: rgba(79, 140, 255, 0.12);
+  border: 1px solid rgba(79, 140, 255, 0.24);
+  border-radius: 999px;
+  color: #cfe0ff;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.deadline-badge--hot,
+.deadline-badge--danger {
+  background: rgba(255, 111, 111, 0.12);
+  border-color: rgba(255, 111, 111, 0.3);
+  color: #ffb9b9;
+}
+
+.request-fields {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 10px;
+}
+
+.request-fields label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.request-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.request-actions button:last-child {
+  background: #242424;
+  color: #ffb9b9;
+}
+
+.request-notes {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.note-card {
+  padding: 12px;
+  background: #111;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.note-card div {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.note-card button {
+  padding: 0;
+  background: transparent;
+  color: #bcd3ff;
+  font-weight: 700;
+}
+
+.empty-state {
+  margin: 8px 0 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 680px) {
+  .request-form,
+  .request-fields {
+    grid-template-columns: 1fr;
+  }
+}
