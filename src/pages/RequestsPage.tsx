@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Auth } from '../components/Auth';
 import { RequestCard } from '../components/RequestCard';
 import { RequestForm } from '../components/RequestForm';
 import { RequestsCalendar } from '../components/RequestsCalendar';
@@ -18,7 +17,6 @@ export function RequestsPage() {
   const [selectedRequestId, setSelectedRequestId] = useState('');
   const [isReady, setIsReady] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState('');
 
   const dayRequests = useMemo(
@@ -36,9 +34,16 @@ export function RequestsPage() {
   useEffect(() => {
     async function init() {
       const { data } = await supabase.auth.getSession();
-      setIsSignedIn(Boolean(data.session));
+      if (!data.session) {
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) {
+          setError('Не удалось открыть заявки без входа. Включи Anonymous sign-ins в Supabase Auth.');
+          setIsReady(true);
+          return;
+        }
+      }
+      await refresh();
       setIsReady(true);
-      if (data.session) await refresh();
     }
     if (isSupabaseConfigured) void init();
   }, []);
@@ -70,11 +75,10 @@ export function RequestsPage() {
       <section className="section-page requests-page">
         <SectionHeader subtitle="Смотри дедлайны в календаре и быстро переходи к выполнению." title="Заявки" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
-        {isSupabaseConfigured && isReady && !isSignedIn && <Auth />}
-        {isSignedIn && (
+        {error && <p className="alert">{error}</p>}
+        {isSupabaseConfigured && isReady && !error && (
           <>
             <RequestForm disabled={isBusy} onCreate={add} />
-            {error && <p className="alert">{error}</p>}
             <RequestsCalendar requests={requests} selectedDate={selectedDate} onSelectDate={(date) => { setSelectedDate(date); setSelectedRequestId(''); }} />
             <RequestsDayList requests={dayRequests} selectedId={selectedRequest?.id ?? ''} onSelect={setSelectedRequestId} onUpdate={change} />
             {selectedRequest ? (
