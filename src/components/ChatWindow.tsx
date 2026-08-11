@@ -10,7 +10,10 @@ export function ChatWindow({ messages, isLoading }: ChatWindowProps) {
     <section className="chat-window" aria-label="История чата">
       {messages.length === 0 ? (
         <div className="chat-empty">
-          <h2>Чем помочь бизнесу сегодня?</h2>
+          <span className="ai-avatar ai-avatar--large" aria-hidden="true">
+            <span />
+          </span>
+          <h2>Чем помочь сегодня?</h2>
           <p>Напиши задачу или выбери готовый сценарий ниже.</p>
         </div>
       ) : (
@@ -19,8 +22,13 @@ export function ChatWindow({ messages, isLoading }: ChatWindowProps) {
 
       {isLoading && (
         <article className="message-bubble message-bubble--assistant">
-          <span>Ассистент</span>
-          <p>Думаю над ответом...</p>
+          <span className="ai-avatar" aria-hidden="true">
+            <span />
+          </span>
+          <div className="message-content">
+            <span>AI</span>
+            <p>Думаю над ответом...</p>
+          </div>
         </article>
       )}
     </section>
