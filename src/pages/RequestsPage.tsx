@@ -5,7 +5,8 @@ import { RequestForm } from '../components/RequestForm';
 import { RequestsCalendar } from '../components/RequestsCalendar';
 import { RequestsDayList } from '../components/RequestsDayList';
 import { SectionHeader } from '../components/SectionHeader';
-import { RequestItem, RequestStatus, createRequest, deleteRequest, loadRequests, updateRequest } from '../lib/requests';
+import { TelegramImportForm } from '../components/TelegramImportForm';
+import { RequestItem, RequestStatus, createNote, createRequest, deleteRequest, loadRequests, updateRequest } from '../lib/requests';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function todayKey() {
@@ -52,12 +53,23 @@ export function RequestsPage() {
     setIsBusy(false);
   }
 
-  async function add(title: string, deadlineAt: string | null) {
-    await run(() => createRequest(title, deadlineAt));
+  async function add(title: string, deadlineAt: string | null, labelColor: string) {
+    await run(() => createRequest(title, deadlineAt, labelColor));
   }
 
-  async function change(id: string, status: RequestStatus, deadlineAt: string | null) {
-    await run(() => updateRequest(id, status, deadlineAt));
+  async function importFromTelegram(title: string, deadlineAt: string | null, labelColor: string, details: string) {
+    setIsBusy(true);
+    setError('');
+    const { data, error } = await createRequest(title, deadlineAt, labelColor);
+    const createdId = data?.id;
+    if (error) setError(error.message);
+    else if (createdId && details) await createNote(createdId, `Импортировано из Telegram:\n${details}`);
+    await refresh();
+    setIsBusy(false);
+  }
+
+  async function change(id: string, status: RequestStatus, deadlineAt: string | null, labelColor: string) {
+    await run(() => updateRequest(id, status, deadlineAt, labelColor));
   }
 
   async function remove(id: string) {
@@ -68,11 +80,12 @@ export function RequestsPage() {
   return (
     <main className="mobile-app-shell">
       <section className="section-page requests-page">
-        <SectionHeader subtitle="Смотри дедлайны в календаре и быстро переходи к выполнению." title="Заявки" />
+        <SectionHeader subtitle="Импортируй заявки из Telegram, ставь дедлайны и отмечай цветом." title="Заявки" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth />}
         {isSignedIn && (
           <>
+            <TelegramImportForm disabled={isBusy} onCreate={importFromTelegram} />
             <RequestForm disabled={isBusy} onCreate={add} />
             {error && <p className="alert">{error}</p>}
             <RequestsCalendar requests={requests} selectedDate={selectedDate} onSelectDate={(date) => { setSelectedDate(date); setSelectedRequestId(''); }} />

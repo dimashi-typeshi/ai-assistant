@@ -24,10 +24,7 @@ function getMonthDays() {
   const offset = (first.getDay() + 6) % 7;
   const days: (Date | null)[] = Array.from({ length: offset }, () => null);
 
-  for (let day = 1; day <= last.getDate(); day += 1) {
-    days.push(new Date(today.getFullYear(), today.getMonth(), day));
-  }
-
+  for (let day = 1; day <= last.getDate(); day += 1) days.push(new Date(today.getFullYear(), today.getMonth(), day));
   return days;
 }
 
@@ -48,8 +45,10 @@ export function RequestsCalendar({ requests, selectedDate, onSelectDate }: Reque
           if (!date) return <span className="calendar-day calendar-day--empty" key={`empty-${index}`} />;
           const dateKey = toDateKey(date);
           const dayRequests = sameDayRequests(requests, dateKey);
+          const colors = [...new Set(dayRequests.map((request) => request.label_color))].slice(0, 4);
           const hasOverdue = dayRequests.some((request) => getDeadlineState(request) === 'overdue');
           const isSelected = selectedDate === dateKey;
+
           return (
             <button
               className={`calendar-day${isSelected ? ' calendar-day--selected' : ''}${hasOverdue ? ' calendar-day--overdue' : ''}`}
@@ -59,6 +58,11 @@ export function RequestsCalendar({ requests, selectedDate, onSelectDate }: Reque
             >
               <span>{date.getDate()}</span>
               {dayRequests.length > 0 && <strong>{dayRequests.length}</strong>}
+              {colors.length > 0 && (
+                <i className="calendar-color-row">
+                  {colors.map((color) => <b key={color} style={{ backgroundColor: color }} />)}
+                </i>
+              )}
             </button>
           );
         })}

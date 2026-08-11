@@ -5,7 +5,7 @@ type RequestsDayListProps = {
   requests: RequestItem[];
   selectedId: string;
   onSelect: (id: string) => void;
-  onUpdate: (id: string, status: RequestStatus, deadlineAt: string | null) => Promise<void>;
+  onUpdate: (id: string, status: RequestStatus, deadlineAt: string | null, labelColor: string) => Promise<void>;
 };
 
 function statusLabel(status: RequestStatus) {
@@ -24,6 +24,7 @@ export function RequestsDayList({ requests, selectedId, onSelect, onUpdate }: Re
         const state = getDeadlineState(request);
         return (
           <article className={`day-request day-request--${request.status}${state === 'overdue' ? ' day-request--overdue' : ''}`} key={request.id}>
+            <span className="request-color-mark" style={{ backgroundColor: request.label_color }} />
             <button className={selectedId === request.id ? 'day-request__main active' : 'day-request__main'} onClick={() => onSelect(request.id)} type="button">
               <span>{request.title}</span>
               <small>{request.deadline_at ? new Date(request.deadline_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : 'Без времени'}</small>
@@ -31,7 +32,7 @@ export function RequestsDayList({ requests, selectedId, onSelect, onUpdate }: Re
             </button>
             <DeadlineBadge request={request} />
             {request.status === 'new' && (
-              <button className="start-button" onClick={() => void onUpdate(request.id, 'in_progress', request.deadline_at)} type="button">
+              <button className="start-button" onClick={() => void onUpdate(request.id, 'in_progress', request.deadline_at, request.label_color)} type="button">
                 Начать выполнение
               </button>
             )}

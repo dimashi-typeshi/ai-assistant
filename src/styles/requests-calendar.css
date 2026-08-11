@@ -76,13 +76,26 @@
   font-size: 11px;
 }
 
+.calendar-color-row {
+  display: flex;
+  gap: 3px;
+  min-height: 5px;
+}
+
+.calendar-color-row b {
+  display: block;
+  width: 12px;
+  height: 5px;
+  border-radius: 999px;
+}
+
 .calendar-day--overdue strong {
   background: #ff6f6f;
 }
 
 .day-request {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   gap: 10px;
   align-items: center;
   padding: 10px;
@@ -93,6 +106,12 @@
 
 .day-request--overdue {
   border-color: rgba(255, 111, 111, 0.42);
+}
+
+.request-color-mark {
+  width: 10px;
+  height: 42px;
+  border-radius: 999px;
 }
 
 .day-request__main {

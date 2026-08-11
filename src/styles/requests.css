@@ -10,12 +10,14 @@
 }
 
 .request-form {
-  grid-template-columns: 1fr 220px auto;
+  grid-template-columns: 1fr 220px auto auto;
 }
 
 .request-form input,
 .request-fields input,
 .request-fields select,
+.telegram-import textarea,
+.import-draft input,
 .note-form textarea {
   width: 100%;
   padding: 12px;
@@ -26,6 +28,8 @@
 }
 
 .request-form button,
+.telegram-import button,
+.import-draft button,
 .note-form button,
 .request-actions button {
   padding: 11px 14px;
@@ -44,6 +48,7 @@
   padding: 16px;
   background: linear-gradient(180deg, #1a1a1a, #141414);
   border: 1px solid var(--line);
+  border-left: 5px solid var(--accent);
   border-radius: 12px;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
 }
@@ -112,6 +117,52 @@
 .request-actions button:last-child {
   background: #242424;
   color: #ffb9b9;
+}
+
+.telegram-import {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #121212;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.telegram-import h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.import-draft {
+  display: grid;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.color-picker--card {
+  margin-top: 12px;
+}
+
+.color-dot {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+.color-dot--active {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
 }
 
 .request-notes {

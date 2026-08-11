@@ -7,6 +7,7 @@ export type RequestItem = {
   title: string;
   status: RequestStatus;
   deadline_at: string | null;
+  label_color: string;
   created_at: string;
 };
 
@@ -21,21 +22,26 @@ export type RequestNote = {
 export async function loadRequests() {
   return supabase
     .from('requests')
-    .select('id, title, status, deadline_at, created_at')
+    .select('id, title, status, deadline_at, label_color, created_at')
     .order('created_at', { ascending: false });
 }
 
-export async function createRequest(title: string, deadlineAt: string | null) {
-  return supabase.from('requests').insert({
-    title,
-    deadline_at: deadlineAt,
-  });
-}
-
-export async function updateRequest(id: string, status: RequestStatus, deadlineAt: string | null) {
+export async function createRequest(title: string, deadlineAt: string | null, labelColor: string) {
   return supabase
     .from('requests')
-    .update({ status, deadline_at: deadlineAt, updated_at: new Date().toISOString() })
+    .insert({
+      label_color: labelColor,
+      title,
+      deadline_at: deadlineAt,
+    })
+    .select('id')
+    .single();
+}
+
+export async function updateRequest(id: string, status: RequestStatus, deadlineAt: string | null, labelColor: string) {
+  return supabase
+    .from('requests')
+    .update({ status, deadline_at: deadlineAt, label_color: labelColor, updated_at: new Date().toISOString() })
     .eq('id', id);
 }
 
