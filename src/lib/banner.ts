@@ -6,6 +6,16 @@ export type BannerData = {
   imageUrl: string;
 };
 
+export type ProductCardData = {
+  title: string;
+  description: string;
+  price: string;
+  oldPrice: string;
+  rating: string;
+  reviews: string;
+  imageUrl: string;
+};
+
 function escapeXml(value: string) {
   return value
     .replace(/&/g, '&amp;')
@@ -59,7 +69,39 @@ export function createBannerSvg(data: BannerData) {
 </svg>`.trim();
 }
 
-export async function downloadBannerPng(svg: string) {
+export function createProductCardSvg(data: ProductCardData) {
+  const title = lines(data.title || 'Название товара', 27, 3);
+  const description = lines(data.description || 'Краткие характеристики товара', 34, 3);
+  const price = data.price || '19 990 ₸';
+  const rating = data.rating || '4.9';
+  const reviews = data.reviews || '128 отзывов';
+
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#161616"/>
+      <stop offset="100%" stop-color="#0d0d0d"/>
+    </linearGradient>
+    <clipPath id="productClip"><rect x="96" y="96" width="888" height="520" rx="42"/></clipPath>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#page)"/>
+  <rect x="54" y="54" width="972" height="972" rx="54" fill="#f8f8f8"/>
+  ${data.imageUrl ? `<image href="${escapeXml(data.imageUrl)}" x="96" y="96" width="888" height="520" preserveAspectRatio="xMidYMid slice" clip-path="url(#productClip)"/>` : `<rect x="96" y="96" width="888" height="520" rx="42" fill="#eeeeee"/><text x="540" y="370" text-anchor="middle" fill="#9a9a9a" font-size="36" font-family="Inter, Arial">Фото товара</text>`}
+  <rect x="96" y="642" width="174" height="54" rx="27" fill="#ef4444"/>
+  <text x="183" y="679" text-anchor="middle" fill="#ffffff" font-size="28" font-weight="850" font-family="Inter, Arial">Скидка</text>
+  <text x="96" y="760" fill="#151515" font-size="54" font-weight="850" font-family="Inter, Arial">${escapeXml(price)}</text>
+  ${data.oldPrice ? `<text x="96" y="808" fill="#8a8a8a" font-size="30" font-family="Inter, Arial" text-decoration="line-through">${escapeXml(data.oldPrice)}</text>` : ''}
+  ${title.map((line, index) => `<text x="96" y="${858 + index * 42}" fill="#242424" font-size="34" font-weight="760" font-family="Inter, Arial">${escapeXml(line)}</text>`).join('')}
+  ${description.map((line, index) => `<text x="96" y="${966 + index * 32}" fill="#737373" font-size="26" font-family="Inter, Arial">${escapeXml(line)}</text>`).join('')}
+  <text x="790" y="680" fill="#f59e0b" font-size="34" font-weight="850" font-family="Inter, Arial">★ ${escapeXml(rating)}</text>
+  <text x="790" y="724" fill="#737373" font-size="24" font-family="Inter, Arial">${escapeXml(reviews)}</text>
+  <rect x="744" y="922" width="240" height="72" rx="22" fill="#7c3aed"/>
+  <text x="864" y="968" text-anchor="middle" fill="#ffffff" font-size="30" font-weight="850" font-family="Inter, Arial">Купить</text>
+</svg>`.trim();
+}
+
+export async function downloadBannerPng(svg: string, fileName = 'instagram-banner.png') {
   const image = new Image();
   const svgUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   await new Promise<void>((resolve, reject) => {
@@ -73,7 +115,7 @@ export async function downloadBannerPng(svg: string) {
   canvas.getContext('2d')?.drawImage(image, 0, 0);
   URL.revokeObjectURL(svgUrl);
   const link = document.createElement('a');
-  link.download = 'instagram-banner.png';
+  link.download = fileName;
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
