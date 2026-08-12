@@ -63,13 +63,7 @@ export function HomePage() {
             <span aria-hidden="true" />
           </button>
           <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
-            <input
-              ref={inputRef}
-              aria-label="Поиск по разделам"
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search..."
-              value={query}
-            />
+            <input ref={inputRef} aria-label="Поиск по разделам" onChange={(event) => setQuery(event.target.value)} placeholder="Search..." value={query} />
           </div>
           <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
             <span>{profileTile.icon}</span>
@@ -88,13 +82,33 @@ export function HomePage() {
       </aside>
 
       <section className="mobile-home">
-        <header className="mobile-home__header">
-          <div className="home-title-block">
-            <p className="eyebrow">AI workspace</p>
-            <h1>Панель управления</h1>
-            <p>Быстрый доступ к рабочим разделам, платежам, аренде и заявкам.</p>
+        <section className="home-promo">
+          <div className="home-promo__copy">
+            <h1>
+              Управляй бизнесом быстрее
+              <span>с AI workspace</span>
+            </h1>
+            <p>Все ключевые инструменты в одном месте: ИИ-чат, реклама, аренда, платежи, заявки и профиль команды.</p>
+            <div className="home-promo__actions">
+              <Link className="home-promo__primary" href="/chat">Начать с ИИ</Link>
+              <Link className="home-promo__secondary" href="/rent">Посмотреть аренду</Link>
+            </div>
           </div>
-        </header>
+          <div className="home-promo__stats">
+            <article>
+              <strong>AI</strong>
+              <p>Генерация идей, текстов и ответов</p>
+            </article>
+            <article>
+              <strong>₸</strong>
+              <p>Платежи, статусы и напоминания</p>
+            </article>
+            <article>
+              <strong>AR</strong>
+              <p>Договоры, оплаты и заметки аренды</p>
+            </article>
+          </div>
+        </section>
 
         {searchResults.length > 0 && (
           <div className="home-search-results">
