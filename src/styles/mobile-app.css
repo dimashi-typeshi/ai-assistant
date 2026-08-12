@@ -78,20 +78,32 @@
 }
 
 .home-rail {
+  position: relative;
+  z-index: 15;
   grid-row: 2;
   display: grid;
   align-content: start;
   gap: 10px;
+  width: 58px;
   padding: 18px 9px;
   background: #111312;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: width 240ms ease, box-shadow 240ms ease;
+}
+
+.home-rail:hover {
+  width: 230px;
+  box-shadow: 20px 0 40px rgba(0, 0, 0, 0.28);
 }
 
 .home-rail-link {
-  display: grid;
-  width: 40px;
+  display: flex;
+  width: 210px;
   height: 40px;
-  place-items: center;
+  align-items: center;
+  gap: 12px;
+  padding: 0 11px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -99,12 +111,31 @@
   font-size: 12px;
   font-weight: 850;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .home-rail-link:hover {
   background: #1b1f1d;
   border-color: rgba(255, 255, 255, 0.1);
   color: #f4f4f5;
+}
+
+.home-rail-link span {
+  display: grid;
+  width: 18px;
+  flex: 0 0 18px;
+  place-items: center;
+}
+
+.home-rail-link strong {
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.home-rail:hover .home-rail-link strong {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .mobile-home {

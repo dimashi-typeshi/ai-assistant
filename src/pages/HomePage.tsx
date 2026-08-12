@@ -81,7 +81,8 @@ export function HomePage() {
       <aside className="home-rail" aria-label="Быстрая навигация">
         {dashboardTiles.map((tile) => (
           <Link className="home-rail-link" href={tile.href} key={tile.href}>
-            {tile.icon}
+            <span>{tile.icon}</span>
+            <strong>{tile.label}</strong>
           </Link>
         ))}
       </aside>
