@@ -23,8 +23,8 @@
   position: fixed;
   z-index: 0;
   display: block;
-  width: 260px;
-  height: 160px;
+  width: 420px;
+  height: 260px;
   border: 1px solid rgba(34, 211, 238, 0.5);
   border-radius: 28px 8px 28px 8px;
   content: '';
@@ -45,8 +45,8 @@
 .home-dashboard-shell::after {
   bottom: 90px;
   left: 11vw;
-  width: 190px;
-  height: 190px;
+  width: 320px;
+  height: 320px;
   background: rgba(217, 70, 239, 0.18);
   border-color: rgba(217, 70, 239, 0.52);
   border-radius: 12px;
@@ -89,8 +89,8 @@
 .mobile-home::before {
   top: 44%;
   right: 18vw;
-  width: 150px;
-  height: 92px;
+  width: 280px;
+  height: 170px;
   background: rgba(163, 230, 53, 0.18);
   border: 1px solid rgba(163, 230, 53, 0.52);
   border-radius: 10px 24px 10px 24px;
@@ -104,12 +104,74 @@
 .mobile-home::after {
   top: 28%;
   left: 18vw;
-  width: 170px;
+  width: 360px;
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.86), rgba(34, 211, 238, 0.82), transparent);
   box-shadow: 0 0 18px rgba(34, 211, 238, 0.44);
   transform: rotate(-12deg);
   animation: warm-line-drift 16s ease-in-out infinite;
+}
+
+.tile-grid::before,
+.tile-grid::after,
+.home-promo::before,
+.home-promo::after {
+  position: fixed;
+  z-index: -1;
+  display: block;
+  content: '';
+  pointer-events: none;
+}
+
+.tile-grid::before {
+  right: 4vw;
+  bottom: 18vh;
+  width: 260px;
+  height: 260px;
+  background: rgba(59, 130, 246, 0.13);
+  border: 1px solid rgba(59, 130, 246, 0.48);
+  border-radius: 999px;
+  box-shadow: 0 0 42px rgba(59, 130, 246, 0.32), inset 0 0 28px rgba(59, 130, 246, 0.1);
+  animation: warm-shape-drift-b 24s ease-in-out infinite;
+}
+
+.tile-grid::after {
+  left: 30vw;
+  bottom: 6vh;
+  width: 340px;
+  height: 90px;
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.48);
+  border-radius: 999px;
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.3), inset 0 0 26px rgba(251, 191, 36, 0.1);
+  transform: rotate(-18deg);
+  animation: warm-line-drift 19s ease-in-out infinite;
+}
+
+.home-promo::before {
+  top: 16vh;
+  left: 42vw;
+  width: 240px;
+  height: 240px;
+  background: rgba(236, 72, 153, 0.13);
+  border: 1px solid rgba(236, 72, 153, 0.46);
+  border-radius: 48px;
+  box-shadow: 0 0 44px rgba(236, 72, 153, 0.34), inset 0 0 28px rgba(236, 72, 153, 0.12);
+  transform: rotate(24deg);
+  animation: warm-shape-drift-a 21s ease-in-out infinite;
+}
+
+.home-promo::after {
+  top: 58vh;
+  left: 10vw;
+  width: 230px;
+  height: 230px;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.44);
+  border-radius: 26px 999px 26px 999px;
+  box-shadow: 0 0 42px rgba(45, 212, 191, 0.3), inset 0 0 24px rgba(45, 212, 191, 0.12);
+  transform: rotate(-28deg);
+  animation: warm-shape-drift-c 23s ease-in-out infinite;
 }
 
 @keyframes warm-shape-drift-a {
