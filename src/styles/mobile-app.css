@@ -117,6 +117,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  justify-content: flex-end;
+  min-width: min(100%, 560px);
 }
 
 .home-profile-link {
@@ -183,17 +185,15 @@
 }
 
 .home-search {
-  display: grid;
-  grid-template-rows: 0fr;
-  margin: -6px 0 18px;
+  width: 0;
+  margin: 0;
   opacity: 0;
   overflow: hidden;
-  transition: grid-template-rows 240ms ease, opacity 240ms ease, margin 240ms ease;
+  transition: width 240ms ease, opacity 240ms ease;
 }
 
 .home-search--open {
-  grid-template-rows: 1fr;
-  margin: 0 0 22px;
+  width: min(320px, 36vw);
   opacity: 1;
 }
 
@@ -379,6 +379,16 @@
   .home-actions {
     width: 100%;
     justify-content: space-between;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .home-search {
+    order: 3;
+  }
+
+  .home-search--open {
+    width: 100%;
   }
 
   .mobile-home__header h1 {

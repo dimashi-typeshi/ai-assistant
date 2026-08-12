@@ -59,22 +59,21 @@ export function HomePage() {
             <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
               <span aria-hidden="true" />
             </button>
+            <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
+              <input
+                ref={inputRef}
+                aria-label="Поиск по разделам"
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Найти раздел, вкладку или информацию"
+                value={query}
+              />
+            </div>
             <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
               <span>{profileTile.icon}</span>
               <strong>{profileTile.label}</strong>
             </Link>
           </div>
         </header>
-
-        <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
-          <input
-            ref={inputRef}
-            aria-label="Поиск по разделам"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Найти раздел, вкладку или информацию"
-            value={query}
-          />
-        </div>
 
         {searchResults.length > 0 && (
           <div className="home-search-results">
