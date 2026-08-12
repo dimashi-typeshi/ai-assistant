@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'wouter';
+import { PhotoUpload } from '../components/PhotoUpload';
 import { RentOverviewCard } from '../components/RentOverviewCard';
 import { SectionHeader } from '../components/SectionHeader';
 
@@ -48,6 +49,7 @@ function PaymentsOverview() {
 function OperationsPanel() {
   return (
     <>
+      <PhotoUpload section="payment-operations" title="Фото операций" />
       <form className="rent-form">
         <input placeholder="Название операции" />
         <div className="rent-form__row">
@@ -75,6 +77,7 @@ function OperationsPanel() {
 function PendingPaymentsPanel() {
   return (
     <>
+      <PhotoUpload section="pending-payments" title="Фото ожидаемых платежей" />
       <form className="rent-form">
         <input placeholder="За что платёж" />
         <div className="rent-form__row">
@@ -102,6 +105,7 @@ function PendingPaymentsPanel() {
 function RemindersPanel() {
   return (
     <>
+      <PhotoUpload section="payment-reminders" title="Фото для напоминаний" />
       <form className="rent-form">
         <input placeholder="Текст напоминания" />
         <input type="date" />

@@ -2,6 +2,7 @@ export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  imageUrl?: string;
 };
 
 type MessageBubbleProps = {
@@ -20,6 +21,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       )}
       <div className="message-content">
         <span>{label}</span>
+        {message.imageUrl && <img className="message-image" alt="Прикреплённое фото" src={message.imageUrl} />}
         <p>{message.text}</p>
       </div>
     </article>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PhotoUpload } from './PhotoUpload';
 import { RentPaymentForm } from './RentPaymentForm';
 import { formatRentAmount, formatRentDate, RentPayment } from '../lib/rent';
 
@@ -45,6 +46,7 @@ export function RentPaymentsCalendar({ disabled, onCreate, payments }: RentPayme
 
   return (
     <>
+      <PhotoUpload disabled={disabled} section="rent-payments" title="Фото платежей аренды" />
       <RentPaymentForm disabled={disabled} onCreate={onCreate} />
       <section className="calendar-panel">
         <div className="calendar-header">

@@ -12,9 +12,14 @@ type AiResponse = {
   error?: string;
 };
 
-export async function askBusinessAssistant(prompt: string) {
+export type AiImageInput = {
+  data: string;
+  mimeType: string;
+};
+
+export async function askBusinessAssistant(prompt: string, image?: AiImageInput) {
   const { data, error } = await supabase.functions.invoke<AiResponse>('ai', {
-    body: { prompt, system: systemPrompt },
+    body: { image, prompt, system: systemPrompt },
   });
 
   if (error) {

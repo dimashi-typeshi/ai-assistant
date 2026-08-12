@@ -1,3 +1,4 @@
+import { PhotoUpload } from './PhotoUpload';
 import { RentContractForm } from './RentContractForm';
 import { formatRentAmount, formatRentDate, RentContract } from '../lib/rent';
 
@@ -32,6 +33,7 @@ function getStatusText(contract: RentContract) {
 export function RentContractsPanel({ contracts, disabled, onCreate }: RentContractsPanelProps) {
   return (
     <>
+      <PhotoUpload disabled={disabled} section="rent-contracts" title="Фото договоров" />
       <RentContractForm disabled={disabled} onCreate={onCreate} />
       <div className="rent-contract-list">
         {contracts.map((contract) => (

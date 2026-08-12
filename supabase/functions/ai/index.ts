@@ -23,6 +23,11 @@ type GeminiResponse = {
   }>;
 };
 
+type ImageInput = {
+  data?: unknown;
+  mimeType?: unknown;
+};
+
 function json(body: object, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -40,9 +45,11 @@ Deno.serve(async (req) => {
       return json({ error: 'AI пока не настроен. Попроси наставника проверить секрет.' }, 503);
     }
 
-    const body = (await req.json()) as { prompt?: unknown; system?: unknown };
+    const body = (await req.json()) as { prompt?: unknown; system?: unknown; image?: ImageInput };
     const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
     const system = typeof body.system === 'string' ? body.system.trim() : '';
+    const imageData = typeof body.image?.data === 'string' ? body.image.data : '';
+    const imageMimeType = typeof body.image?.mimeType === 'string' ? body.image.mimeType : '';
 
     if (!prompt) return json({ error: 'Напиши запрос для AI.' }, 400);
     if (prompt.length > 10_000 || system.length > 5_000) {
@@ -56,7 +63,12 @@ Deno.serve(async (req) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           systemInstruction: system ? { parts: [{ text: system }] } : undefined,
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{
+            parts: [
+              { text: prompt },
+              ...(imageData && imageMimeType ? [{ inlineData: { data: imageData, mimeType: imageMimeType } }] : []),
+            ],
+          }],
         }),
       },
     );

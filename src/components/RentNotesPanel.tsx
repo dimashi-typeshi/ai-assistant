@@ -1,3 +1,4 @@
+import { PhotoUpload } from './PhotoUpload';
 import { RentNoteForm } from './RentNoteForm';
 import { formatRentDate, RentNote } from '../lib/rent';
 
@@ -10,6 +11,7 @@ type RentNotesPanelProps = {
 export function RentNotesPanel({ disabled, notes, onCreate }: RentNotesPanelProps) {
   return (
     <>
+      <PhotoUpload disabled={disabled} section="rent-notes" title="Фото по объектам" />
       <RentNoteForm disabled={disabled} onCreate={onCreate} />
       <div className="rent-note-list">
         {notes.map((note) => (

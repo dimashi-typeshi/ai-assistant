@@ -187,6 +187,11 @@
   backdrop-filter: blur(18px);
 }
 
+.chat-input__body {
+  display: grid;
+  gap: 8px;
+}
+
 .chat-input textarea {
   width: 100%;
   min-height: 58px;
@@ -199,6 +204,39 @@
   color: var(--ink);
   caret-color: var(--accent);
   line-height: 1.5;
+}
+
+.chat-photo-button {
+  display: inline-grid;
+  width: fit-content;
+  min-height: 34px;
+  place-items: center;
+  padding: 7px 11px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 140, 255, 0.34);
+  border-radius: 8px;
+  color: #cfe0ff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chat-photo-button input {
+  display: none;
+}
+
+.chat-image-name {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.message-image {
+  max-width: 260px;
+  max-height: 220px;
+  margin: 0 0 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
 }
 
 .chat-input textarea::placeholder {
