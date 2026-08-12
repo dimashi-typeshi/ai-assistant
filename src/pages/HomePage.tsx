@@ -50,13 +50,13 @@ export function HomePage() {
     <main className="mobile-app-shell home-dashboard-shell">
       <nav className="home-topbar">
         <Link className="home-ai-mark" href="/chat" aria-label="Открыть чат с ИИ">
-          <span>AI</span>
+          <span>A</span>
         </Link>
         <div className="home-crumbs">
-          <strong>dimashi-typeshi's Project</strong>
+          <strong>AI Assistant</strong>
           <span>/</span>
-          <b>main</b>
-          <em>PRODUCTION</em>
+          <b>Workspace</b>
+          <em>LIVE</em>
         </div>
         <div className="home-actions">
           <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
