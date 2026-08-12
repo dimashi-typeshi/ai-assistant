@@ -355,7 +355,7 @@
   width: 16px;
   height: 16px;
   place-items: center;
-  background: #0f1110;
+  background: transparent;
   border: 1px solid rgba(134, 239, 172, 0.42);
   border-radius: 999px;
   color: #86efac;

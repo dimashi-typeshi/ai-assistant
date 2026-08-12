@@ -1,5 +1,5 @@
 import { CSSProperties, useMemo, useRef, useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { AppTile } from '../components/AppTile';
 
 const tiles = [
@@ -52,7 +52,8 @@ function createFloatingShapes() {
 
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const floatingShapes = useMemo(() => createFloatingShapes(), []);
+  const [location] = useLocation();
+  const floatingShapes = useMemo(() => createFloatingShapes(), [location]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const cleanQuery = query.trim().toLowerCase();
