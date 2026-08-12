@@ -22,15 +22,18 @@ const searchItems = [
   { href: '/requests', label: 'Календарь заявок', section: 'Заявки', text: 'Дедлайны, задачи, обращения, Telegram' },
 ];
 
+const profileTile = tiles.find((tile) => tile.href === '/profile') ?? tiles[tiles.length - 1];
+
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const cleanQuery = query.trim().toLowerCase();
+  const dashboardTiles = tiles.filter((tile) => tile.href !== '/profile');
   const filteredTiles = useMemo(() => {
-    if (!cleanQuery) return tiles;
-    return tiles.filter((tile) => `${tile.label} ${tile.text}`.toLowerCase().includes(cleanQuery));
-  }, [cleanQuery]);
+    if (!cleanQuery) return dashboardTiles;
+    return dashboardTiles.filter((tile) => `${tile.label} ${tile.text}`.toLowerCase().includes(cleanQuery));
+  }, [cleanQuery, dashboardTiles]);
   const searchResults = useMemo(() => {
     if (!cleanQuery) return [];
     return searchItems.filter((item) => (
@@ -47,13 +50,20 @@ export function HomePage() {
     <main className="mobile-app-shell">
       <section className="mobile-home">
         <header className="mobile-home__header">
-          <div>
+          <div className="home-title-block">
             <p className="eyebrow">AI workspace</p>
             <h1>Панель управления</h1>
+            <p>Быстрый доступ к рабочим разделам, платежам, аренде и заявкам.</p>
           </div>
-          <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
-            <span aria-hidden="true" />
-          </button>
+          <div className="home-actions">
+            <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
+              <span aria-hidden="true" />
+            </button>
+            <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
+              <span>{profileTile.icon}</span>
+              <strong>{profileTile.label}</strong>
+            </Link>
+          </div>
         </header>
 
         <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
