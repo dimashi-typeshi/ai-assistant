@@ -1,3 +1,4 @@
+import { useMemo, useRef, useState } from 'react';
 import { AppTile } from '../components/AppTile';
 
 const tiles = [
@@ -10,6 +11,21 @@ const tiles = [
 ];
 
 export function HomePage() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const filteredTiles = useMemo(() => {
+    const cleanQuery = query.trim().toLowerCase();
+    if (!cleanQuery) return tiles;
+
+    return tiles.filter((tile) => `${tile.label} ${tile.text}`.toLowerCase().includes(cleanQuery));
+  }, [query]);
+
+  function openSearch() {
+    setIsSearchOpen(true);
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
   return (
     <main className="mobile-app-shell">
       <section className="mobile-home">
@@ -18,14 +34,32 @@ export function HomePage() {
             <p className="eyebrow">AI workspace</p>
             <h1>Панель управления</h1>
           </div>
-          <span className="status-pill">Online</span>
+          <button
+            aria-label="Открыть поиск"
+            className="home-search-button"
+            onClick={openSearch}
+            type="button"
+          >
+            <span aria-hidden="true" />
+          </button>
         </header>
 
+        <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
+          <input
+            ref={inputRef}
+            aria-label="Поиск по разделам"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Найти раздел или информацию"
+            value={query}
+          />
+        </div>
+
         <div className="tile-grid">
-          {tiles.map((tile) => (
+          {filteredTiles.map((tile) => (
             <AppTile key={tile.href} {...tile} />
           ))}
         </div>
+        {filteredTiles.length === 0 && <p className="empty-state">Ничего не найдено. Попробуй другой запрос.</p>}
       </section>
     </main>
   );
