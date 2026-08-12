@@ -8,6 +8,7 @@ import { PaymentsPage } from './pages/PaymentsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RentPage } from './pages/RentPage';
 import { RequestsPage } from './pages/RequestsPage';
+import { SeatsPage } from './pages/SeatsPage';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/payments/pending" component={PaymentsPage} />
         <Route path="/payments/reminders" component={PaymentsPage} />
         <Route path="/requests" component={RequestsPage} />
+        <Route path="/seats" component={SeatsPage} />
         <Route path="/profile" component={ProfilePage} />
         <Route component={NotFoundPage} />
       </Switch>

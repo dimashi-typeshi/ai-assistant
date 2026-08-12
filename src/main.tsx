@@ -10,6 +10,7 @@ import './styles/profile.css';
 import './styles/rent.css';
 import './styles/requests.css';
 import './styles/requests-calendar.css';
+import './styles/seats.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

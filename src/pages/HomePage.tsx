@@ -8,6 +8,7 @@ const tiles = [
   { href: '/rent', icon: 'AR', label: 'Аренда', text: 'Сроки, суммы, объекты' },
   { href: '/payments', icon: '₸', label: 'Платежи', text: 'Оплаты и напоминания' },
   { href: '/requests', icon: '→', label: 'Заявки', text: 'Задачи и обращения' },
+  { href: '/seats', icon: 'SE', label: 'Свободные места', text: 'Схема здания и отметки мест' },
   { href: '/profile', icon: 'ID', label: 'Профиль', text: 'Данные и настройки' },
 ];
 
@@ -20,6 +21,7 @@ const searchItems = [
   { href: '/payments/pending', label: 'Ожидаемые платежи', section: 'Платежи', text: 'Предстоящие платежи, дата, сумма' },
   { href: '/payments/reminders', label: 'Напоминания', section: 'Платежи', text: 'Напоминания об оплате и важных датах' },
   { href: '/requests', label: 'Календарь заявок', section: 'Заявки', text: 'Дедлайны, задачи, обращения, Telegram' },
+  { href: '/seats', label: 'Свободные места', section: 'Схема здания', text: 'Фото схемы, распознавание ИИ, отметка свободных и занятых мест' },
 ];
 
 const profileTile = tiles.find((tile) => tile.href === '/profile') ?? tiles[tiles.length - 1];
@@ -88,24 +90,24 @@ export function HomePage() {
               Управляй бизнесом быстрее
               <span>с AI workspace</span>
             </h1>
-            <p>Все ключевые инструменты в одном месте: ИИ-чат, реклама, аренда, платежи, заявки и профиль команды.</p>
+            <p>Все ключевые инструменты в одном месте: ИИ-чат, реклама, аренда, платежи, заявки, свободные места и профиль команды.</p>
             <div className="home-promo__actions">
               <Link className="home-promo__primary" href="/chat">Начать с ИИ</Link>
-              <Link className="home-promo__secondary" href="/rent">Посмотреть аренду</Link>
+              <Link className="home-promo__secondary" href="/seats">Открыть схему мест</Link>
             </div>
           </div>
           <div className="home-promo__stats">
             <article>
               <strong>AI</strong>
-              <p>Генерация идей, текстов и ответов</p>
+              <p>Генерация идей, текстов и анализ фото</p>
             </article>
             <article>
               <strong>₸</strong>
               <p>Платежи, статусы и напоминания</p>
             </article>
             <article>
-              <strong>AR</strong>
-              <p>Договоры, оплаты и заметки аренды</p>
+              <strong>SE</strong>
+              <p>Свободные места на схеме здания</p>
             </article>
           </div>
         </section>
