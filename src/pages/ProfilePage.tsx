@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
 import { Auth } from '../components/Auth';
 import { ProfileActions } from '../components/ProfileActions';
 import { ProfileEditor } from '../components/ProfileEditor';
@@ -10,6 +11,7 @@ import { isSupabaseConfigured } from '../lib/supabase';
 const emptyProfile: ProfileData = { name: '', phone: '', avatarUrl: '' };
 
 export function ProfilePage() {
+  const [, navigate] = useLocation();
   const [profile, setProfile] = useState<ProfileData>(emptyProfile);
   const [savedEmail, setSavedEmail] = useState('');
   const [email, setEmail] = useState('');
@@ -21,6 +23,9 @@ export function ProfilePage() {
     const { data } = await loadProfile();
     const user = data.user;
     if (!user) {
+      setSavedEmail('');
+      setEmail('');
+      setProfile(emptyProfile);
       setIsReady(true);
       return;
     }
@@ -64,7 +69,12 @@ export function ProfilePage() {
 
   async function leave() {
     await signOut();
-    window.location.reload();
+    setSavedEmail('');
+    setEmail('');
+    setProfile(emptyProfile);
+    setIsEditing(false);
+    setMessage('');
+    navigate('/profile');
   }
 
   return (
@@ -72,7 +82,7 @@ export function ProfilePage() {
       <section className="section-page profile-page">
         <SectionHeader subtitle="Минималистичный профиль с аватаром, данными аккаунта и действиями." title="Профиль" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
-        {isSupabaseConfigured && isReady && !savedEmail && <Auth />}
+        {isSupabaseConfigured && isReady && !savedEmail && <Auth onAuthenticated={refresh} />}
         {savedEmail && (
           <>
             <ProfileHeader email={savedEmail} profile={profile} onAvatarChange={(avatarUrl) => setProfile({ ...profile, avatarUrl })} />

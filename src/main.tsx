@@ -7,6 +7,7 @@ import './styles/ads.css';
 import './styles/assistant.css';
 import './styles/chat.css';
 import './styles/profile.css';
+import './styles/rent.css';
 import './styles/requests.css';
 import './styles/requests-calendar.css';
 

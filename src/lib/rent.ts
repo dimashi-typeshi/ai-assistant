@@ -1,0 +1,205 @@
+import { supabase } from './supabase';
+
+export type RentContract = {
+  id: string;
+  objectName: string;
+  tenantName: string;
+  startsAt: string;
+  endsAt: string;
+  monthlyAmount: number;
+  isActive: boolean;
+};
+
+export type RentContractRow = {
+  id: string;
+  object_name: string;
+  tenant_name: string;
+  starts_at: string;
+  ends_at: string;
+  monthly_amount: number;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type RentPayment = {
+  id: string;
+  objectName: string;
+  dueAt: string;
+  amount: number;
+  isPaid: boolean;
+};
+
+export type RentPaymentRow = {
+  id: string;
+  object_name: string;
+  due_at: string;
+  amount: number;
+  is_paid: boolean;
+  created_at: string;
+};
+
+export type RentNote = {
+  id: string;
+  objectName: string;
+  text: string;
+  createdAt: string;
+};
+
+export type RentNoteRow = {
+  id: string;
+  object_name: string;
+  text: string;
+  created_at: string;
+};
+
+export const sampleRentContracts: RentContract[] = [
+  {
+    endsAt: '2026-11-30',
+    id: 'sample-contract-1',
+    isActive: true,
+    monthlyAmount: 280000,
+    objectName: 'Квартира на Абая',
+    startsAt: '2026-06-01',
+    tenantName: 'Айдана',
+  },
+  {
+    endsAt: '2027-02-15',
+    id: 'sample-contract-2',
+    isActive: true,
+    monthlyAmount: 420000,
+    objectName: 'Офис в центре',
+    startsAt: '2026-08-15',
+    tenantName: 'ТОО Orion',
+  },
+];
+
+export const sampleRentPayments: RentPayment[] = [
+  {
+    amount: 280000,
+    dueAt: '2026-08-20',
+    id: 'sample-payment-1',
+    isPaid: false,
+    objectName: 'Квартира на Абая',
+  },
+  {
+    amount: 420000,
+    dueAt: '2026-09-01',
+    id: 'sample-payment-2',
+    isPaid: false,
+    objectName: 'Офис в центре',
+  },
+];
+
+export const sampleRentNotes: RentNote[] = [
+  {
+    createdAt: '2026-08-10T09:00:00.000Z',
+    id: 'sample-note-1',
+    objectName: 'Квартира на Абая',
+    text: 'Проверить счётчики воды перед следующей оплатой.',
+  },
+  {
+    createdAt: '2026-08-11T12:00:00.000Z',
+    id: 'sample-note-2',
+    objectName: 'Офис в центре',
+    text: 'Уточнить у арендатора дату продления договора.',
+  },
+];
+
+export function mapRentContract(row: RentContractRow): RentContract {
+  return {
+    endsAt: row.ends_at,
+    id: row.id,
+    isActive: row.is_active,
+    monthlyAmount: Number(row.monthly_amount),
+    objectName: row.object_name,
+    startsAt: row.starts_at,
+    tenantName: row.tenant_name,
+  };
+}
+
+export function mapRentPayment(row: RentPaymentRow): RentPayment {
+  return {
+    amount: Number(row.amount),
+    dueAt: row.due_at,
+    id: row.id,
+    isPaid: row.is_paid,
+    objectName: row.object_name,
+  };
+}
+
+export function mapRentNote(row: RentNoteRow): RentNote {
+  return {
+    createdAt: row.created_at,
+    id: row.id,
+    objectName: row.object_name,
+    text: row.text,
+  };
+}
+
+export async function loadRentContracts() {
+  return supabase
+    .from('rent_contracts')
+    .select('id, object_name, tenant_name, starts_at, ends_at, monthly_amount, is_active, created_at')
+    .order('ends_at', { ascending: true });
+}
+
+export async function createRentContract(
+  objectName: string,
+  tenantName: string,
+  startsAt: string,
+  endsAt: string,
+  monthlyAmount: number,
+) {
+  return supabase.from('rent_contracts').insert({
+    ends_at: endsAt,
+    monthly_amount: monthlyAmount,
+    object_name: objectName,
+    starts_at: startsAt,
+    tenant_name: tenantName,
+  });
+}
+
+export async function loadRentPayments() {
+  return supabase
+    .from('rent_payments')
+    .select('id, object_name, due_at, amount, is_paid, created_at')
+    .order('due_at', { ascending: true });
+}
+
+export async function createRentPayment(objectName: string, dueAt: string, amount: number) {
+  return supabase.from('rent_payments').insert({
+    amount,
+    due_at: dueAt,
+    object_name: objectName,
+  });
+}
+
+export async function loadRentNotes() {
+  return supabase
+    .from('rent_notes')
+    .select('id, object_name, text, created_at')
+    .order('created_at', { ascending: false });
+}
+
+export async function createRentNote(objectName: string, text: string) {
+  return supabase.from('rent_notes').insert({
+    object_name: objectName,
+    text,
+  });
+}
+
+export function formatRentDate(value: string) {
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(value));
+}
+
+export function formatRentAmount(value: number) {
+  return new Intl.NumberFormat('ru-KZ', {
+    currency: 'KZT',
+    maximumFractionDigits: 0,
+    style: 'currency',
+  }).format(value);
+}

@@ -23,13 +23,13 @@ export async function updateProfile(data: ProfileData) {
 export async function updateEmail(email: string) {
   return supabase.auth.updateUser(
     { email },
-    { emailRedirectTo: window.location.origin },
+    { emailRedirectTo: `${window.location.origin}/dashboard` },
   );
 }
 
 export async function sendPasswordReset(email: string) {
   return supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin,
+    redirectTo: `${window.location.origin}/dashboard`,
   });
 }
 
