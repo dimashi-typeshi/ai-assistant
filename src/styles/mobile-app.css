@@ -20,6 +20,100 @@
 
 .home-dashboard-shell::before,
 .home-dashboard-shell::after {
+  content: none;
+}
+
+.floating-shapes {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.floating-shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--shape-size);
+  height: calc(var(--shape-size) * 0.62);
+  border: 1px solid currentColor;
+  opacity: 0.72;
+  transform: rotate(var(--shape-rotate));
+  animation: random-neon-drift var(--shape-duration) ease-in-out infinite;
+  animation-delay: var(--shape-delay);
+  filter: drop-shadow(0 0 18px currentColor);
+}
+
+.floating-shape--circle {
+  height: var(--shape-size);
+  border-radius: 999px;
+}
+
+.floating-shape--diamond {
+  height: var(--shape-size);
+  border-radius: 18px;
+  transform: rotate(calc(var(--shape-rotate) + 45deg));
+}
+
+.floating-shape--capsule {
+  border-radius: 999px;
+}
+
+.floating-shape--soft-square {
+  height: var(--shape-size);
+  border-radius: 34px 10px 34px 10px;
+}
+
+.floating-shape--line {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+}
+
+.floating-shape--cyan {
+  color: rgba(34, 211, 238, 0.78);
+  background: rgba(34, 211, 238, 0.13);
+}
+
+.floating-shape--pink {
+  color: rgba(236, 72, 153, 0.78);
+  background: rgba(236, 72, 153, 0.13);
+}
+
+.floating-shape--lime {
+  color: rgba(163, 230, 53, 0.76);
+  background: rgba(163, 230, 53, 0.12);
+}
+
+.floating-shape--amber {
+  color: rgba(251, 191, 36, 0.76);
+  background: rgba(251, 191, 36, 0.12);
+}
+
+.floating-shape--violet {
+  color: rgba(168, 85, 247, 0.76);
+  background: rgba(168, 85, 247, 0.12);
+}
+
+.floating-shape--teal {
+  color: rgba(45, 212, 191, 0.76);
+  background: rgba(45, 212, 191, 0.12);
+}
+
+@keyframes random-neon-drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 32px -28px;
+  }
+}
+
+.home-dashboard-shell::before,
+.home-dashboard-shell::after {
   position: fixed;
   z-index: 0;
   display: block;
@@ -172,6 +266,17 @@
   box-shadow: 0 0 42px rgba(45, 212, 191, 0.3), inset 0 0 24px rgba(45, 212, 191, 0.12);
   transform: rotate(-28deg);
   animation: warm-shape-drift-c 10s ease-in-out infinite;
+}
+
+.home-dashboard-shell::before,
+.home-dashboard-shell::after,
+.mobile-home::before,
+.mobile-home::after,
+.tile-grid::before,
+.tile-grid::after,
+.home-promo::before,
+.home-promo::after {
+  content: none !important;
 }
 
 @keyframes warm-shape-drift-a {

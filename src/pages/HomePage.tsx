@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 
@@ -25,9 +25,34 @@ const searchItems = [
 ];
 
 const profileTile = tiles.find((tile) => tile.href === '/profile') ?? tiles[tiles.length - 1];
+const neonColors = ['cyan', 'pink', 'lime', 'amber', 'violet', 'teal'];
+const neonShapes = ['circle', 'diamond', 'capsule', 'soft-square', 'line'];
+
+function createFloatingShapes() {
+  return Array.from({ length: 12 }, (_, index) => {
+    const size = Math.round(120 + Math.random() * 260);
+    const color = neonColors[Math.floor(Math.random() * neonColors.length)];
+    const shape = neonShapes[Math.floor(Math.random() * neonShapes.length)];
+
+    return {
+      color,
+      id: `shape-${index}-${Math.random().toString(36).slice(2)}`,
+      shape,
+      style: {
+        '--shape-delay': `${Math.random() * -8}s`,
+        '--shape-duration': `${6 + Math.random() * 7}s`,
+        '--shape-rotate': `${Math.round(Math.random() * 90 - 45)}deg`,
+        '--shape-size': `${size}px`,
+        left: `${Math.round(Math.random() * 88)}vw`,
+        top: `${Math.round(10 + Math.random() * 82)}vh`,
+      } as CSSProperties,
+    };
+  });
+}
 
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const floatingShapes = useMemo(() => createFloatingShapes(), []);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const cleanQuery = query.trim().toLowerCase();
@@ -50,6 +75,15 @@ export function HomePage() {
 
   return (
     <main className="mobile-app-shell home-dashboard-shell">
+      <div className="floating-shapes" aria-hidden="true">
+        {floatingShapes.map((shape) => (
+          <span
+            className={`floating-shape floating-shape--${shape.shape} floating-shape--${shape.color}`}
+            key={shape.id}
+            style={shape.style}
+          />
+        ))}
+      </div>
       <nav className="home-topbar">
         <Link className="home-ai-mark" href="/chat" aria-label="Открыть чат с ИИ">
           <span>A</span>
