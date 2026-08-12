@@ -164,6 +164,12 @@
   border-radius: 12px;
 }
 
+.photo-upload:focus {
+  border-color: rgba(79, 140, 255, 0.55);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.1);
+}
+
 .photo-upload div:first-child {
   display: grid;
   gap: 4px;

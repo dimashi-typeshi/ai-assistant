@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, ClipboardEvent, FormEvent } from 'react';
 
 type ChatInputProps = {
   value: string;
@@ -19,14 +19,22 @@ export function ChatInput({ value, imageName, isLoading, onChange, onImageChange
     onImageChange(event.target.files?.[0] ?? null);
   }
 
+  function handlePaste(event: ClipboardEvent<HTMLFormElement>) {
+    const file = Array.from(event.clipboardData.files).find((item) => item.type.startsWith('image/'));
+    if (!file) return;
+
+    event.preventDefault();
+    onImageChange(file);
+  }
+
   return (
-    <form className="chat-input" onSubmit={handleSubmit}>
+    <form className="chat-input" onPaste={handlePaste} onSubmit={handleSubmit}>
       <div className="chat-input__body">
         <textarea
           aria-label="Задача для AI-ассистента"
           disabled={isLoading}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Например: проанализируй фото и разложи информацию по вкладкам"
+          placeholder="Например: проанализируй фото. Можно вставить картинку через Ctrl+V"
           rows={3}
           value={value}
         />

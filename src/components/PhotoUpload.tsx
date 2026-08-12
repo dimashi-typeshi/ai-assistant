@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, ClipboardEvent, useState } from 'react';
 import { UploadedPhoto, uploadSectionPhoto } from '../lib/photos';
 
 type PhotoUploadProps = {
@@ -12,8 +12,7 @@ export function PhotoUpload({ disabled = false, section, title = 'Фото' }: P
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
 
-  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  async function uploadPhoto(file: File) {
     if (!file) return;
 
     setIsUploading(true);
@@ -25,15 +24,30 @@ export function PhotoUpload({ disabled = false, section, title = 'Фото' }: P
       setError(caughtError instanceof Error ? caughtError.message : 'Не получилось загрузить фото.');
     } finally {
       setIsUploading(false);
+    }
+  }
+
+  async function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) {
+      await uploadPhoto(file);
       event.target.value = '';
     }
   }
 
+  async function handlePaste(event: ClipboardEvent<HTMLElement>) {
+    const file = Array.from(event.clipboardData.files).find((item) => item.type.startsWith('image/'));
+    if (!file) return;
+
+    event.preventDefault();
+    await uploadPhoto(file);
+  }
+
   return (
-    <section className="photo-upload">
+    <section className="photo-upload" onPaste={handlePaste} tabIndex={0}>
       <div>
         <strong>{title}</strong>
-        <span>{isUploading ? 'Загрузка...' : 'Загрузите фото, чек, договор или скриншот'}</span>
+        <span>{isUploading ? 'Загрузка...' : 'Загрузите фото или вставьте его через Ctrl+V'}</span>
       </div>
       <label>
         <input accept="image/*" disabled={disabled || isUploading} onChange={handleChange} type="file" />
