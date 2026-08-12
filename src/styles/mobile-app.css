@@ -25,7 +25,7 @@
   display: block;
   width: 260px;
   height: 160px;
-  border: 1px solid rgba(251, 191, 36, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.5);
   border-radius: 28px 8px 28px 8px;
   content: '';
   pointer-events: none;
@@ -34,7 +34,10 @@
 .home-dashboard-shell::before {
   top: 130px;
   right: 8vw;
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(34, 211, 238, 0.18);
+  box-shadow:
+    0 0 28px rgba(34, 211, 238, 0.34),
+    inset 0 0 30px rgba(34, 211, 238, 0.12);
   transform: rotate(14deg);
   animation: warm-shape-drift-a 18s ease-in-out infinite;
 }
@@ -44,11 +47,14 @@
   left: 11vw;
   width: 190px;
   height: 190px;
-  background: rgba(244, 114, 82, 0.07);
-  border-color: rgba(244, 114, 82, 0.16);
+  background: rgba(217, 70, 239, 0.18);
+  border-color: rgba(217, 70, 239, 0.52);
   border-radius: 12px;
   transform: rotate(45deg);
   animation: warm-shape-drift-b 22s ease-in-out infinite;
+  box-shadow:
+    0 0 32px rgba(217, 70, 239, 0.36),
+    inset 0 0 30px rgba(217, 70, 239, 0.14);
 }
 
 .home-topbar {
@@ -85,11 +91,14 @@
   right: 18vw;
   width: 150px;
   height: 92px;
-  background: rgba(251, 146, 60, 0.08);
-  border: 1px solid rgba(251, 146, 60, 0.15);
+  background: rgba(163, 230, 53, 0.18);
+  border: 1px solid rgba(163, 230, 53, 0.52);
   border-radius: 10px 24px 10px 24px;
   transform: rotate(-18deg);
   animation: warm-shape-drift-c 20s ease-in-out infinite;
+  box-shadow:
+    0 0 30px rgba(163, 230, 53, 0.34),
+    inset 0 0 26px rgba(163, 230, 53, 0.12);
 }
 
 .mobile-home::after {
@@ -97,7 +106,8 @@
   left: 18vw;
   width: 170px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(253, 186, 116, 0.34), transparent);
+  background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.86), rgba(34, 211, 238, 0.82), transparent);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.44);
   transform: rotate(-12deg);
   animation: warm-line-drift 16s ease-in-out infinite;
 }
