@@ -47,31 +47,51 @@ export function HomePage() {
   }
 
   return (
-    <main className="mobile-app-shell">
+    <main className="mobile-app-shell home-dashboard-shell">
+      <nav className="home-topbar">
+        <Link className="home-ai-mark" href="/chat" aria-label="Открыть чат с ИИ">
+          <span>AI</span>
+        </Link>
+        <div className="home-crumbs">
+          <strong>dimashi-typeshi's Project</strong>
+          <span>/</span>
+          <b>main</b>
+          <em>PRODUCTION</em>
+        </div>
+        <div className="home-actions">
+          <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
+            <span aria-hidden="true" />
+          </button>
+          <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
+            <input
+              ref={inputRef}
+              aria-label="Поиск по разделам"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search..."
+              value={query}
+            />
+          </div>
+          <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
+            <span>{profileTile.icon}</span>
+            <strong>{profileTile.label}</strong>
+          </Link>
+        </div>
+      </nav>
+
+      <aside className="home-rail" aria-label="Быстрая навигация">
+        {dashboardTiles.map((tile) => (
+          <Link className="home-rail-link" href={tile.href} key={tile.href}>
+            {tile.icon}
+          </Link>
+        ))}
+      </aside>
+
       <section className="mobile-home">
         <header className="mobile-home__header">
           <div className="home-title-block">
             <p className="eyebrow">AI workspace</p>
             <h1>Панель управления</h1>
             <p>Быстрый доступ к рабочим разделам, платежам, аренде и заявкам.</p>
-          </div>
-          <div className="home-actions">
-            <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
-              <span aria-hidden="true" />
-            </button>
-            <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
-              <input
-                ref={inputRef}
-                aria-label="Поиск по разделам"
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Найти раздел, вкладку или информацию"
-                value={query}
-              />
-            </div>
-            <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
-              <span>{profileTile.icon}</span>
-              <strong>{profileTile.label}</strong>
-            </Link>
           </div>
         </header>
 
