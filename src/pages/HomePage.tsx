@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 
 const tiles = [
@@ -10,16 +11,32 @@ const tiles = [
   { href: '/profile', icon: 'ID', label: 'Профиль', text: 'Данные и настройки' },
 ];
 
+const searchItems = [
+  ...tiles.map((tile) => ({ ...tile, section: 'Раздел' })),
+  { href: '/rent/contracts', label: 'Активные договоры', section: 'Аренда', text: 'Договоры аренды, сроки, арендаторы, сумма в месяц' },
+  { href: '/rent/payments', label: 'Календарь оплат', section: 'Аренда', text: 'Платежи аренды, даты, просрочки, суммы' },
+  { href: '/rent/notes', label: 'Заметки по объектам', section: 'Аренда', text: 'Заметки, объекты, важные условия' },
+  { href: '/payments/operations', label: 'Последние операции', section: 'Платежи', text: 'История операций, статус, сумма' },
+  { href: '/payments/pending', label: 'Ожидаемые платежи', section: 'Платежи', text: 'Предстоящие платежи, дата, сумма' },
+  { href: '/payments/reminders', label: 'Напоминания', section: 'Платежи', text: 'Напоминания об оплате и важных датах' },
+  { href: '/requests', label: 'Календарь заявок', section: 'Заявки', text: 'Дедлайны, задачи, обращения, Telegram' },
+];
+
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const cleanQuery = query.trim().toLowerCase();
   const filteredTiles = useMemo(() => {
-    const cleanQuery = query.trim().toLowerCase();
     if (!cleanQuery) return tiles;
-
     return tiles.filter((tile) => `${tile.label} ${tile.text}`.toLowerCase().includes(cleanQuery));
-  }, [query]);
+  }, [cleanQuery]);
+  const searchResults = useMemo(() => {
+    if (!cleanQuery) return [];
+    return searchItems.filter((item) => (
+      `${item.section} ${item.label} ${item.text}`.toLowerCase().includes(cleanQuery)
+    ));
+  }, [cleanQuery]);
 
   function openSearch() {
     setIsSearchOpen(true);
@@ -34,12 +51,7 @@ export function HomePage() {
             <p className="eyebrow">AI workspace</p>
             <h1>Панель управления</h1>
           </div>
-          <button
-            aria-label="Открыть поиск"
-            className="home-search-button"
-            onClick={openSearch}
-            type="button"
-          >
+          <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
             <span aria-hidden="true" />
           </button>
         </header>
@@ -49,17 +61,31 @@ export function HomePage() {
             ref={inputRef}
             aria-label="Поиск по разделам"
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Найти раздел или информацию"
+            placeholder="Найти раздел, вкладку или информацию"
             value={query}
           />
         </div>
+
+        {searchResults.length > 0 && (
+          <div className="home-search-results">
+            {searchResults.map((item) => (
+              <Link className="home-search-result" href={item.href} key={`${item.section}-${item.href}`}>
+                <span>{item.section}</span>
+                <strong>{item.label}</strong>
+                <p>{item.text}</p>
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="tile-grid">
           {filteredTiles.map((tile) => (
             <AppTile key={tile.href} {...tile} />
           ))}
         </div>
-        {filteredTiles.length === 0 && <p className="empty-state">Ничего не найдено. Попробуй другой запрос.</p>}
+        {cleanQuery && searchResults.length === 0 && (
+          <p className="empty-state">Ничего не найдено. Попробуй другой запрос.</p>
+        )}
       </section>
     </main>
   );
