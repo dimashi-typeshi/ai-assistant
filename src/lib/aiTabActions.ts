@@ -135,6 +135,18 @@ export async function applyTabAction(action: AiTabAction) {
   return createRequest(action.title, action.deadlineAt, '#4f8cff');
 }
 
+export async function applySuggestedTabActions(prompt: string) {
+  const actions = await suggestTabActions(prompt);
+  if (actions.length === 0) return { appliedCount: 0, error: '' };
+
+  const results = await Promise.all(actions.map(applyTabAction));
+  const failed = results.find((result) => result.error);
+  return {
+    appliedCount: failed?.error ? 0 : actions.length,
+    error: failed?.error?.message ?? '',
+  };
+}
+
 export function getActionTitle(action: AiTabAction) {
   if (action.type === 'rent_contract') return `Договор: ${action.objectName}`;
   if (action.type === 'rent_payment') return `Оплата: ${action.objectName}`;

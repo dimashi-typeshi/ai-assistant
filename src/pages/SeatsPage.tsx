@@ -1,154 +1,267 @@
-import { ClipboardEvent, ChangeEvent, useMemo, useState } from 'react';
+import { ClipboardEvent, ChangeEvent, useEffect, useRef, useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
-import { askBusinessAssistant } from '../lib/ai';
 import { readPhotoAsDataUrl, splitDataUrl } from '../lib/photos';
+import { analyzeSeatScheme, SeatMarker, SeatSchemeDesign } from '../lib/seatsAi';
 
-type SeatState = 'busy' | 'free';
+type SeatAccent = SeatSchemeDesign['accent'];
 
-type Seat = {
+type Scheme = {
   id: string;
-  row: number;
-  side: 'left' | 'right';
-  index: number;
-  state: SeatState;
+  imageUrl: string;
+  name: string;
+  analysis: string;
+  accent: SeatAccent;
+  markers: SeatMarker[];
 };
 
-const rows = Array.from({ length: 20 }, (_, index) => index + 6);
-const unavailableRows = new Set([6, 8, 9, 25]);
+const schemesKey = 'seatSchemes';
+const indexKey = 'seatSchemesActiveIndex';
 
-function createSeats() {
-  return rows.flatMap((row) => {
-    const leftCount = row <= 9 || row === 25 ? 3 : 4;
-    const rightCount = row <= 9 || row === 25 ? 3 : 4;
-    const left = Array.from({ length: leftCount }, (_, index) => ({
-      id: `left-${row}-${index}`,
-      index,
-      row,
-      side: 'left' as const,
-      state: unavailableRows.has(row) ? 'busy' as SeatState : 'free' as SeatState,
-    }));
-    const right = Array.from({ length: rightCount }, (_, index) => ({
-      id: `right-${row}-${index}`,
-      index,
-      row,
-      side: 'right' as const,
-      state: row <= 10 || unavailableRows.has(row) ? 'busy' as SeatState : 'free' as SeatState,
-    }));
+function loadSchemes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(schemesKey) ?? '[]') as Scheme[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
-    return [...left, ...right];
-  });
+function getMarkerIcon(marker: SeatMarker) {
+  return marker.kind === 'bunk' ? 'II' : marker.state === 'free' ? '+' : '-';
 }
 
 export function SeatsPage() {
-  const [seats, setSeats] = useState<Seat[]>(createSeats);
-  const [schemeUrl, setSchemeUrl] = useState('');
-  const [analysis, setAnalysis] = useState('');
+  const [schemes, setSchemes] = useState<Scheme[]>(loadSchemes);
+  const [activeIndex, setActiveIndex] = useState(() => Number(localStorage.getItem(indexKey) ?? 0));
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const freeCount = seats.filter((seat) => seat.state === 'free').length;
-  const busyCount = seats.length - freeCount;
-  const seatsByRow = useMemo(() => (
-    rows.map((row) => ({
-      left: seats.filter((seat) => seat.row === row && seat.side === 'left'),
-      right: seats.filter((seat) => seat.row === row && seat.side === 'right'),
-      row,
-    }))
-  ), [seats]);
+  const [isPriceMode, setIsPriceMode] = useState(false);
+  const [editingMarkerId, setEditingMarkerId] = useState('');
+  const [priceInput, setPriceInput] = useState('');
+  const clickTimerRef = useRef<number | null>(null);
+  const activeScheme = schemes[Math.min(activeIndex, Math.max(0, schemes.length - 1))];
+  const markers = activeScheme?.markers ?? [];
+  const freeCount = markers.filter((marker) => marker.state === 'free').length;
+  const busyCount = markers.filter((marker) => marker.state === 'busy').length;
 
-  function toggleSeat(id: string) {
-    setSeats((current) => current.map((seat) => (
-      seat.id === id ? { ...seat, state: seat.state === 'free' ? 'busy' : 'free' } : seat
-    )));
-  }
+  useEffect(() => {
+    localStorage.setItem(schemesKey, JSON.stringify(schemes));
+  }, [schemes]);
+
+  useEffect(() => {
+    localStorage.setItem(indexKey, String(activeIndex));
+  }, [activeIndex]);
 
   async function analyzeScheme(file: File) {
-    setSchemeUrl(URL.createObjectURL(file));
+    const imageUrl = await readPhotoAsDataUrl(file);
     setIsAnalyzing(true);
-    setAnalysis('');
 
     try {
-      const image = splitDataUrl(await readPhotoAsDataUrl(file));
-      const answer = await askBusinessAssistant(
-        'Проанализируй фото схемы здания или посадочных мест. Определи, какие места выглядят свободными, занятыми или недоступными. Ответь кратко по-русски и дай рекомендации, как пользователю отметить свободные места на схеме.',
-        image,
-      );
-      setAnalysis(answer);
+      const image = splitDataUrl(imageUrl);
+      const design = await analyzeSeatScheme(image);
+      const nextScheme: Scheme = {
+        accent: design.accent,
+        analysis: design.summary,
+        id: crypto.randomUUID(),
+        imageUrl,
+        markers: design.markers,
+        name: file.name,
+      };
+
+      setSchemes((current) => {
+        const nextSchemes = [...current, nextScheme];
+        setActiveIndex(nextSchemes.length - 1);
+        return nextSchemes;
+      });
     } catch (error) {
-      setAnalysis(error instanceof Error ? error.message : 'Не получилось распознать схему.');
+      const fallbackScheme: Scheme = {
+        accent: 'green',
+        analysis: error instanceof Error ? error.message : 'Не получилось распознать схему.',
+        id: crypto.randomUUID(),
+        imageUrl,
+        markers: [],
+        name: file.name,
+      };
+      setSchemes((current) => {
+        const nextSchemes = [...current, fallbackScheme];
+        setActiveIndex(nextSchemes.length - 1);
+        return nextSchemes;
+      });
     } finally {
       setIsAnalyzing(false);
     }
   }
 
+  function toggleMarker(id: string) {
+    setSchemes((current) => current.map((scheme) => {
+      if (scheme.id !== activeScheme?.id) return scheme;
+      return {
+        ...scheme,
+        markers: scheme.markers.map((marker) => (
+          marker.id === id ? { ...marker, state: marker.state === 'free' ? 'busy' : 'free' } : marker
+        )),
+      };
+    }));
+  }
+
+  function handleMarkerClick(id: string) {
+    if (isPriceMode) {
+      openPriceEditor(id);
+      return;
+    }
+    if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = window.setTimeout(() => {
+      toggleMarker(id);
+      clickTimerRef.current = null;
+    }, 220);
+  }
+
+  function openPriceEditor(id: string) {
+    if (clickTimerRef.current) {
+      window.clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
+    const marker = activeScheme?.markers.find((item) => item.id === id);
+    setEditingMarkerId(id);
+    setPriceInput(marker?.price ?? '');
+  }
+
+  function saveMarkerPrice() {
+    const cleanPrice = priceInput.trim() || 'цена не указана';
+    setSchemes((current) => current.map((scheme) => {
+      if (scheme.id !== activeScheme?.id) return scheme;
+      return {
+        ...scheme,
+        markers: scheme.markers.map((item) => (
+          item.id === editingMarkerId ? { ...item, bottom: { ...item.bottom, price: cleanPrice }, price: cleanPrice, top: { ...item.top, price: cleanPrice } } : item
+        )),
+      };
+    }));
+    setEditingMarkerId('');
+    setPriceInput('');
+  }
+
+  function closePriceEditor() {
+    setEditingMarkerId('');
+    setPriceInput('');
+  }
+
+  function showPreviousScheme() {
+    if (schemes.length < 2) return;
+    setActiveIndex((current) => (current === 0 ? schemes.length - 1 : current - 1));
+  }
+
+  function showNextScheme() {
+    if (schemes.length < 2) return;
+    setActiveIndex((current) => (current === schemes.length - 1 ? 0 : current + 1));
+  }
+
+  function removeActiveScheme() {
+    if (!activeScheme) return;
+    setSchemes((current) => {
+      const nextSchemes = current.filter((scheme) => scheme.id !== activeScheme.id);
+      setActiveIndex((currentIndex) => Math.max(0, Math.min(currentIndex, nextSchemes.length - 1)));
+      return nextSchemes;
+    });
+  }
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (file) await analyzeScheme(file);
+    const files = Array.from(event.target.files ?? []);
+    for (const file of files) await analyzeScheme(file);
     event.target.value = '';
   }
 
   async function handlePaste(event: ClipboardEvent<HTMLElement>) {
-    const file = Array.from(event.clipboardData.files).find((item) => item.type.startsWith('image/'));
-    if (!file) return;
+    const files = Array.from(event.clipboardData.files).filter((item) => item.type.startsWith('image/'));
+    if (files.length === 0) return;
     event.preventDefault();
-    await analyzeScheme(file);
+    for (const file of files) await analyzeScheme(file);
   }
 
   return (
     <main className="mobile-app-shell">
       <section className="section-page seats-page">
-        <SectionHeader subtitle="Загрузи фото схемы здания, а затем отмечай свободные места вручную." title="Свободные места" />
+        <SectionHeader subtitle="Схемы сохраняются после перезапуска, а ИИ отмечает свободные, занятые и двухъярусные кровати." title="Свободные места" />
         <section className="seats-uploader" onPaste={handlePaste} tabIndex={0}>
           <div>
             <strong>Фото схемы</strong>
-            <span>{isAnalyzing ? 'ИИ анализирует схему...' : 'Загрузите фото или вставьте его через Ctrl+V'}</span>
+            <span>{isAnalyzing ? 'ИИ анализирует новую схему...' : 'Загрузите одно или несколько фото, либо вставьте через Ctrl+V'}</span>
           </div>
           <label>
-            <input accept="image/*" disabled={isAnalyzing} onChange={handleFileChange} type="file" />
-            Добавить схему
+            <input accept="image/*" disabled={isAnalyzing} multiple onChange={handleFileChange} type="file" />
+            Добавить схемы
           </label>
-          {schemeUrl && <img alt="Загруженная схема" src={schemeUrl} />}
         </section>
 
         <section className="seats-summary">
           <article><strong>{freeCount}</strong><span>свободно</span></article>
           <article><strong>{busyCount}</strong><span>занято</span></article>
-          <article><strong>{seats.length}</strong><span>всего</span></article>
+          <article><strong>{schemes.length}</strong><span>схем</span></article>
         </section>
 
-        {analysis && <p className="seats-analysis">{analysis}</p>}
+        {activeScheme?.analysis && <p className="seats-analysis">{activeScheme.analysis}</p>}
 
-        <section className="building-scheme" aria-label="Схема свободных мест">
-          <div className="scheme-side-mark" />
-          <div className="scheme-grid">
-            {seatsByRow.map((group) => (
-              <div className="scheme-row" key={group.row}>
-                <div className="scheme-seats scheme-seats--left">
-                  {group.left.map((seat) => (
-                    <button
-                      aria-label={`Ряд ${seat.row}, место ${seat.index + 1}`}
-                      className={`scheme-seat scheme-seat--${seat.state}`}
-                      key={seat.id}
-                      onClick={() => toggleSeat(seat.id)}
-                      type="button"
-                    />
-                  ))}
-                </div>
-                <strong>{group.row}</strong>
-                <div className="scheme-seats scheme-seats--right">
-                  {group.right.map((seat) => (
-                    <button
-                      aria-label={`Ряд ${seat.row}, место ${seat.index + 1}`}
-                      className={`scheme-seat scheme-seat--${seat.state}`}
-                      key={seat.id}
-                      onClick={() => toggleSeat(seat.id)}
-                      type="button"
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+        <button className={`price-mode-button${isPriceMode ? ' price-mode-button--active' : ''}`} onClick={() => setIsPriceMode((current) => !current)} type="button">
+          Установить цену
+        </button>
+
+        <section className={`building-scheme building-scheme--${activeScheme?.accent ?? 'green'}`} aria-label="Схема свободных мест">
+          <div className="scheme-legend" aria-label="Легенда схемы">
+            <span><i className="legend-mark legend-mark--free" />Свободная кровать</span>
+            <span><i className="legend-mark legend-mark--busy" />Занятая кровать</span>
+            <span><i className="legend-mark legend-mark--bunk" />Двухъярусная кровать</span>
           </div>
-          <div className="scheme-side-mark scheme-side-mark--right" />
+          {activeScheme ? (
+            <div className="scheme-image-wrap">
+              <img alt={activeScheme.name} src={activeScheme.imageUrl} />
+              <div className="scheme-marker-layer" aria-label="Кликабельные кровати">
+                {activeScheme.markers.map((marker) => (
+                  <button
+                    aria-label={`${marker.label}: ${marker.price}`}
+                    className={`scheme-marker scheme-marker--${marker.state} scheme-marker--${marker.kind}`}
+                    key={marker.id}
+                    onClick={() => handleMarkerClick(marker.id)}
+                    onDoubleClick={() => openPriceEditor(marker.id)}
+                    style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
+                    type="button"
+                  >
+                    <b>{getMarkerIcon(marker)}</b>
+                    <span className={marker.kind === 'bunk' ? 'scheme-bunk-tooltip' : ''}>
+                      {marker.kind === 'bunk' ? (
+                        <>
+                          <em className={`scheme-level scheme-level--${marker.top.state}`}>Верхний: {marker.top.price}</em>
+                          <em className={`scheme-level scheme-level--${marker.bottom.state}`}>Нижний: {marker.bottom.price}</em>
+                        </>
+                      ) : marker.price}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="scheme-switcher" aria-label="Переключение схем">
+                <button disabled={schemes.length < 2} onClick={showPreviousScheme} type="button">‹</button>
+                <strong>{activeIndex + 1}/{schemes.length}</strong>
+                <button disabled={schemes.length < 2} onClick={showNextScheme} type="button">›</button>
+                <button className="scheme-remove-button" onClick={removeActiveScheme} type="button">×</button>
+              </div>
+            </div>
+          ) : (
+            <div className="scheme-empty">
+              <strong>Загрузите фото схемы</strong>
+              <span>ИИ поставит кликабельные значки прямо на найденные кровати.</span>
+            </div>
+          )}
         </section>
+        {editingMarkerId && (
+          <div className="price-editor-backdrop" role="presentation">
+            <section className="price-editor-dialog" role="dialog" aria-modal="true" aria-labelledby="price-editor-title">
+              <h2 id="price-editor-title">Цена кровати</h2>
+              <input autoFocus onChange={(event) => setPriceInput(event.target.value)} placeholder="Например: 120 000 ₸" value={priceInput} />
+              <div>
+                <button onClick={saveMarkerPrice} type="button">Подтвердить</button>
+                <button onClick={closePriceEditor} type="button">Отмена</button>
+              </div>
+            </section>
+          </div>
+        )}
       </section>
     </main>
   );

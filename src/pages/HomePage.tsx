@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
+import { HomeAdShowcase } from '../components/HomeAdShowcase';
+import { HomeFooter } from '../components/HomeFooter';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
@@ -143,6 +145,8 @@ export function HomePage() {
         {cleanQuery && searchResults.length === 0 && (
           <p className="empty-state">Ничего не найдено. Попробуй другой запрос.</p>
         )}
+        <HomeAdShowcase />
+        <HomeFooter />
       </section>
     </main>
   );

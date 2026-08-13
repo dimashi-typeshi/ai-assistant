@@ -1,6 +1,7 @@
 import { FormEvent, MouseEvent, PointerEvent, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 import { askBusinessAssistant } from '../lib/ai';
+import { applySuggestedTabActions } from '../lib/aiTabActions';
 
 type MiniMessage = {
   id: string;
@@ -58,6 +59,13 @@ export function FloatingAiChat() {
     try {
       const answer = await askBusinessAssistant(prompt);
       setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'assistant', text: answer }]);
+
+      const actionResult = await applySuggestedTabActions(prompt);
+      if (actionResult.error) {
+        setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'assistant', text: actionResult.error }]);
+      } else if (actionResult.appliedCount > 0) {
+        setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'assistant', text: `Я сам обновил записи: ${actionResult.appliedCount}` }]);
+      }
     } catch (caughtError) {
       const text = caughtError instanceof Error ? caughtError.message : 'Не получилось получить ответ.';
       setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'assistant', text }]);
@@ -92,7 +100,7 @@ export function FloatingAiChat() {
             </button>
           </header>
           <div className="floating-ai-window__messages">
-            {messages.length === 0 && <p>Спроси коротко, я помогу не уходя со страницы.</p>}
+            {messages.length === 0 && <p>Спроси коротко, я помогу и сам обновлю подходящие записи.</p>}
             {messages.map((message) => (
               <article className={`floating-ai-message floating-ai-message--${message.role}`} key={message.id}>
                 {message.text}

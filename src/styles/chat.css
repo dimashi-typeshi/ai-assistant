@@ -153,6 +153,29 @@
   gap: 10px;
 }
 
+.chat-title-row {
+  position: relative;
+}
+
+.chat-history-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-height: 38px;
+  padding: 0 13px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(79, 140, 255, 0.34);
+  border-radius: 8px;
+  color: #cfe0ff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chat-history-button:hover {
+  background: rgba(79, 140, 255, 0.22);
+  transform: translateY(-1px);
+}
+
 .ai-disclaimer {
   margin: -4px 0 0;
   color: var(--muted-soft);
@@ -414,6 +437,105 @@
 
 .ai-permission-actions button:last-child {
   background: #242424;
+}
+
+.chat-history-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.54);
+  backdrop-filter: blur(10px);
+}
+
+.chat-history-panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: min(100%, 430px);
+  max-height: min(620px, calc(100vh - 36px));
+  padding: 16px;
+  background: #151515;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+}
+
+.chat-history-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.chat-history-panel h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.chat-history-panel header button {
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 24px;
+}
+
+.chat-history-list {
+  display: grid;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.chat-history-list > p {
+  margin: 18px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.chat-history-item {
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  gap: 8px;
+}
+
+.chat-history-item button {
+  min-width: 0;
+  background: #101010;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+}
+
+.chat-history-item button:first-child {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  text-align: left;
+}
+
+.chat-history-item strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-history-item span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chat-history-item button:last-child {
+  display: grid;
+  height: 30px;
+  place-items: center;
+  align-self: center;
+  background: transparent;
+  color: #ffb9b9;
+  font-size: 20px;
 }
 
 .floating-ai-button {
