@@ -12,6 +12,10 @@ import './styles/requests.css';
 import './styles/requests-calendar.css';
 import './styles/seats.css';
 
+if (localStorage.getItem('hideBackgroundShapes') === 'true') {
+  document.body.classList.add('hide-background-shapes');
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

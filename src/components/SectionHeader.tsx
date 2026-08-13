@@ -8,7 +8,7 @@ type SectionHeaderProps = {
 export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
   return (
     <header className="section-header">
-      <Link className="back-link" href="/">
+      <Link className="back-link" href="/#tabs">
         Назад
       </Link>
       <div>

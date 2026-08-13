@@ -1,5 +1,6 @@
 import { Route, Switch } from 'wouter';
 import { AuthStateRedirect } from './components/AuthStateRedirect';
+import { FloatingAiChat } from './components/FloatingAiChat';
 import { AdsPage } from './pages/AdsPage';
 import { AssistantPage } from './pages/AssistantPage';
 import { HomePage } from './pages/HomePage';
@@ -9,11 +10,13 @@ import { ProfilePage } from './pages/ProfilePage';
 import { RentPage } from './pages/RentPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { SeatsPage } from './pages/SeatsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   return (
     <>
       <AuthStateRedirect />
+      <FloatingAiChat />
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/dashboard" component={HomePage} />
@@ -30,6 +33,7 @@ export default function App() {
         <Route path="/requests" component={RequestsPage} />
         <Route path="/seats" component={SeatsPage} />
         <Route path="/profile" component={ProfilePage} />
+        <Route path="/settings" component={SettingsPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </>

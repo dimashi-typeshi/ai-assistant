@@ -82,13 +82,36 @@
   font-weight: 700;
 }
 
-.profile-form input {
+.profile-form input,
+.profile-form select {
   width: 100%;
   padding: 12px;
   background: #101010;
   border: 1px solid var(--line);
   border-radius: 10px;
   color: var(--ink);
+}
+
+.phone-input-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.phone-input-row b {
+  min-width: 64px;
+  padding: 12px;
+  background: #101010;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.profile-form small {
+  color: var(--muted-soft);
+  font-size: 12px;
 }
 
 .profile-actions {

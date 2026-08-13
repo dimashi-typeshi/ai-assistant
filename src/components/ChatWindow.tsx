@@ -22,12 +22,10 @@ export function ChatWindow({ messages, isLoading }: ChatWindowProps) {
 
       {isLoading && (
         <article className="message-bubble message-bubble--assistant">
-          <span className="ai-avatar" aria-hidden="true">
-            <span />
-          </span>
+          <span className="thinking-loader" aria-hidden="true" />
           <div className="message-content">
             <span>AI</span>
-            <p>Думаю над ответом...</p>
+            <p className="thinking-text">Думаю</p>
           </div>
         </article>
       )}

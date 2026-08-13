@@ -1,5 +1,5 @@
-import { CSSProperties, useMemo, useRef, useState } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 
 const tiles = [
@@ -11,6 +11,8 @@ const tiles = [
   { href: '/seats', icon: 'SE', label: 'Свободные места', text: 'Схема здания и отметки мест' },
   { href: '/profile', icon: 'ID', label: 'Профиль', text: 'Данные и настройки' },
 ];
+
+const settingsTile = { href: '/settings', icon: '⚙', label: 'Настройки', text: 'Параметры приложения' };
 
 const searchItems = [
   ...tiles.map((tile) => ({ ...tile, section: 'Раздел' })),
@@ -25,39 +27,15 @@ const searchItems = [
 ];
 
 const profileTile = tiles.find((tile) => tile.href === '/profile') ?? tiles[tiles.length - 1];
-const neonColors = ['cyan', 'pink', 'lime', 'amber', 'violet', 'teal'];
-const neonShapes = ['circle', 'diamond', 'capsule', 'soft-square', 'line'];
-
-function createFloatingShapes() {
-  return Array.from({ length: 12 }, (_, index) => {
-    const size = Math.round(120 + Math.random() * 260);
-    const color = neonColors[Math.floor(Math.random() * neonColors.length)];
-    const shape = neonShapes[Math.floor(Math.random() * neonShapes.length)];
-
-    return {
-      color,
-      id: `shape-${index}-${Math.random().toString(36).slice(2)}`,
-      shape,
-      style: {
-        '--shape-delay': `${Math.random() * -8}s`,
-        '--shape-duration': `${6 + Math.random() * 7}s`,
-        '--shape-rotate': `${Math.round(Math.random() * 90 - 45)}deg`,
-        '--shape-size': `${size}px`,
-        left: `${Math.round(Math.random() * 88)}vw`,
-        top: `${Math.round(10 + Math.random() * 82)}vh`,
-      } as CSSProperties,
-    };
-  });
-}
 
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [location] = useLocation();
-  const floatingShapes = useMemo(() => createFloatingShapes(), [location]);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const cleanQuery = query.trim().toLowerCase();
   const dashboardTiles = tiles.filter((tile) => tile.href !== '/profile');
+  const railTiles = [...dashboardTiles, settingsTile];
   const filteredTiles = useMemo(() => {
     if (!cleanQuery) return dashboardTiles;
     return dashboardTiles.filter((tile) => `${tile.label} ${tile.text}`.toLowerCase().includes(cleanQuery));
@@ -74,17 +52,15 @@ export function HomePage() {
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
+  useEffect(() => {
+    if (window.location.hash !== '#tabs') return;
+    window.setTimeout(() => {
+      tabsRef.current?.scrollIntoView({ block: 'start' });
+    }, 0);
+  }, []);
+
   return (
     <main className="mobile-app-shell home-dashboard-shell">
-      <div className="floating-shapes" aria-hidden="true">
-        {floatingShapes.map((shape) => (
-          <span
-            className={`floating-shape floating-shape--${shape.shape} floating-shape--${shape.color}`}
-            key={shape.id}
-            style={shape.style}
-          />
-        ))}
-      </div>
       <nav className="home-topbar">
         <Link className="home-ai-mark" href="/chat" aria-label="Открыть чат с ИИ">
           <span>A</span>
@@ -110,7 +86,7 @@ export function HomePage() {
       </nav>
 
       <aside className="home-rail" aria-label="Быстрая навигация">
-        {dashboardTiles.map((tile) => (
+        {railTiles.map((tile) => (
           <Link className="home-rail-link" href={tile.href} key={tile.href}>
             <span>{tile.icon}</span>
             <strong>{tile.label}</strong>
@@ -159,7 +135,7 @@ export function HomePage() {
           </div>
         )}
 
-        <div className="tile-grid">
+        <div className="tile-grid" id="tabs" ref={tabsRef}>
           {filteredTiles.map((tile) => (
             <AppTile key={tile.href} {...tile} />
           ))}
