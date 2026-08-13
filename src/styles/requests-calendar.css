@@ -16,6 +16,11 @@
   gap: 12px;
 }
 
+.calendar-header > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
 .calendar-header h2,
 .day-list h2 {
   margin: 0;
@@ -25,6 +30,36 @@
 .calendar-header span {
   color: var(--muted);
   font-size: 13px;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-nav button {
+  min-height: 34px;
+  padding: 0 10px;
+  background: #181818;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.calendar-nav button:first-child,
+.calendar-nav button:last-child {
+  width: 34px;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.calendar-nav button:hover {
+  background: var(--accent-soft);
+  border-color: rgba(79, 140, 255, 0.34);
 }
 
 .calendar-weekdays,
@@ -157,6 +192,15 @@
   .calendar-panel,
   .day-list {
     padding: 10px;
+  }
+
+  .calendar-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .calendar-nav {
+    justify-content: space-between;
   }
 
   .calendar-day {
