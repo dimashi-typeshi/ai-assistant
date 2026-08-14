@@ -42,6 +42,24 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+body.light-theme {
+  --bg: #f4f7f6;
+  --bg-soft: #eef3f1;
+  --panel: #ffffff;
+  --panel-elevated: #f8fbfa;
+  --ink: #111816;
+  --muted: #5f6b67;
+  --muted-soft: #7c8783;
+  --line: rgba(17, 24, 22, 0.1);
+  --line-strong: rgba(17, 24, 22, 0.16);
+  --assistant: #ffffff;
+  --user: #dbeafe;
+  background:
+    linear-gradient(180deg, rgba(62, 229, 143, 0.08), transparent 240px),
+    var(--bg);
+  color: var(--ink);
+}
+
 #root {
   max-width: 100%;
   overflow-x: hidden;

@@ -5,6 +5,7 @@ import { AppLanguage, getLanguage, languages, setLanguage } from '../lib/i18n';
 
 export function SettingsPage() {
   const [hideShapes, setHideShapes] = useState(() => localStorage.getItem('hideBackgroundShapes') === 'true');
+  const [theme, setTheme] = useState(() => localStorage.getItem('appTheme') === 'light' ? 'light' : 'dark');
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(getLanguage);
   const supportText = 'Здравствуйте! Нужна помощь с приложением AI Assistant.';
 
@@ -12,6 +13,11 @@ export function SettingsPage() {
     document.body.classList.toggle('hide-background-shapes', hideShapes);
     localStorage.setItem('hideBackgroundShapes', String(hideShapes));
   }, [hideShapes]);
+
+  useEffect(() => {
+    document.body.classList.toggle('light-theme', theme === 'light');
+    localStorage.setItem('appTheme', theme);
+  }, [theme]);
 
   async function copySupportText() {
     await navigator.clipboard.writeText(supportText);
@@ -28,6 +34,29 @@ export function SettingsPage() {
         <SectionHeader subtitle="Фон, поддержка и безопасность аккаунта." title="Настройки" />
 
         <div className="settings-list">
+          <section className="settings-card settings-card--stack">
+            <div>
+              <h2>Тема</h2>
+              <p>Темная тема стоит по умолчанию. Можно переключиться на светлую.</p>
+            </div>
+            <div className="settings-theme-grid">
+              <button
+                className={theme === 'dark' ? 'settings-theme settings-theme--active' : 'settings-theme'}
+                onClick={() => setTheme('dark')}
+                type="button"
+              >
+                Темная
+              </button>
+              <button
+                className={theme === 'light' ? 'settings-theme settings-theme--active' : 'settings-theme'}
+                onClick={() => setTheme('light')}
+                type="button"
+              >
+                Светлая
+              </button>
+            </div>
+          </section>
+
           <section className="settings-card settings-card--stack">
             <div>
               <h2>Языки</h2>

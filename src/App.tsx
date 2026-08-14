@@ -17,6 +17,8 @@ import { applyTranslations } from './lib/i18n';
 
 export default function App() {
   useEffect(() => {
+    document.body.classList.toggle('light-theme', localStorage.getItem('appTheme') === 'light');
+
     let frame = 0;
     const translateSoon = () => {
       window.cancelAnimationFrame(frame);

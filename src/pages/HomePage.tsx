@@ -107,6 +107,10 @@ export function HomePage() {
       </aside>
 
       <section className="mobile-home">
+        <section className="home-hook-workspace" aria-label="Место для работы над хуком">
+          <span>Место для хука</span>
+        </section>
+
         <section className="home-promo">
           <div className="home-promo__copy">
             <h1>
