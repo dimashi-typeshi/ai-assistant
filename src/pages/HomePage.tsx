@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 import { HomeAdShowcase } from '../components/HomeAdShowcase';
 import { HomeFooter } from '../components/HomeFooter';
+import { HomeLaunchHero } from '../components/HomeLaunchHero';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
@@ -97,6 +98,8 @@ export function HomePage() {
       </aside>
 
       <section className="mobile-home">
+        <HomeLaunchHero />
+
         <section className="home-promo">
           <div className="home-promo__copy">
             <h1>
