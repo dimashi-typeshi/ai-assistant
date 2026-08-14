@@ -8,6 +8,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RentPage } from './pages/RentPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { SeatsPage } from './pages/SeatsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -30,6 +31,9 @@ export default function App() {
         <Route path="/payments/operations" component={PaymentsPage} />
         <Route path="/payments/pending" component={PaymentsPage} />
         <Route path="/payments/reminders" component={PaymentsPage} />
+        <Route path="/report" component={ReportsPage} />
+        <Route path="/reports" component={ReportsPage} />
+        <Route path="/reports/" component={ReportsPage} />
         <Route path="/requests" component={RequestsPage} />
         <Route path="/seats" component={SeatsPage} />
         <Route path="/profile" component={ProfilePage} />

@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 import { HomeAdShowcase } from '../components/HomeAdShowcase';
 import { HomeFooter } from '../components/HomeFooter';
-import { HomeLaunchHero } from '../components/HomeLaunchHero';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
   { href: '/ads', icon: 'AD', label: 'Создать рекламу', text: 'Баннер для Instagram' },
   { href: '/rent', icon: 'AR', label: 'Аренда', text: 'Сроки, суммы, объекты' },
   { href: '/payments', icon: '₸', label: 'Платежи', text: 'Оплаты и напоминания' },
+  { href: '/reports', icon: 'RP', label: 'Отчёты', text: 'Отчёт из выбранных вкладок' },
   { href: '/requests', icon: '→', label: 'Заявки', text: 'Задачи и обращения' },
   { href: '/seats', icon: 'SE', label: 'Свободные места', text: 'Схема здания и отметки мест' },
   { href: '/profile', icon: 'ID', label: 'Профиль', text: 'Данные и настройки' },
@@ -55,11 +55,8 @@ export function HomePage() {
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
-  useEffect(() => {
-    if (window.location.hash !== '#tabs') return;
-    window.setTimeout(() => {
-      tabsRef.current?.scrollIntoView({ block: 'start' });
-    }, 0);
+  useLayoutEffect(() => {
+    window.scrollTo({ left: 0, top: 0 });
   }, []);
 
   return (
@@ -75,11 +72,23 @@ export function HomePage() {
           <em>LIVE</em>
         </div>
         <div className="home-actions">
+          <Link className="reports-open-button" href="/reports">Отчёты</Link>
           <button aria-label="Открыть поиск" className="home-search-button" onClick={openSearch} type="button">
             <span aria-hidden="true" />
           </button>
           <div className={`home-search${isSearchOpen ? ' home-search--open' : ''}`}>
             <input ref={inputRef} aria-label="Поиск по разделам" onChange={(event) => setQuery(event.target.value)} placeholder="Search..." value={query} />
+            {cleanQuery && (
+              <div className="home-search-suggestions" role="listbox">
+                {searchResults.length > 0 ? searchResults.map((item) => (
+                  <Link className="home-search-suggestion" href={item.href} key={`${item.section}-${item.href}`}>
+                    {item.label}
+                  </Link>
+                )) : (
+                  <p className="home-search-empty">Ничего не найдено</p>
+                )}
+              </div>
+            )}
           </div>
           <Link className="home-profile-link" href={profileTile.href} aria-label="Открыть профиль">
             <span>{profileTile.icon}</span>
@@ -98,8 +107,6 @@ export function HomePage() {
       </aside>
 
       <section className="mobile-home">
-        <HomeLaunchHero />
-
         <section className="home-promo">
           <div className="home-promo__copy">
             <h1>
@@ -113,6 +120,9 @@ export function HomePage() {
             </div>
           </div>
           <div className="home-promo__stats">
+            <div className="home-top-badge">
+              сохрани 10 часов в неделю
+            </div>
             <article>
               <strong>AI</strong>
               <p>Генерация идей, текстов и анализ фото</p>
@@ -127,18 +137,6 @@ export function HomePage() {
             </article>
           </div>
         </section>
-
-        {searchResults.length > 0 && (
-          <div className="home-search-results">
-            {searchResults.map((item) => (
-              <Link className="home-search-result" href={item.href} key={`${item.section}-${item.href}`}>
-                <span>{item.section}</span>
-                <strong>{item.label}</strong>
-                <p>{item.text}</p>
-              </Link>
-            ))}
-          </div>
-        )}
 
         <div className="tile-grid" id="tabs" ref={tabsRef}>
           {filteredTiles.map((tile) => (
