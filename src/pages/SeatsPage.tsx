@@ -1,4 +1,4 @@
-import { ClipboardEvent, ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ClipboardEvent, ChangeEvent, PointerEvent, useEffect, useRef, useState } from 'react';
 import { SectionHeader } from '../components/SectionHeader';
 import { readPhotoAsDataUrl, splitDataUrl } from '../lib/photos';
 import { analyzeSeatScheme, SeatMarker, SeatSchemeDesign } from '../lib/seatsAi';
@@ -37,7 +37,9 @@ export function SeatsPage() {
   const [isPriceMode, setIsPriceMode] = useState(false);
   const [editingMarkerId, setEditingMarkerId] = useState('');
   const [priceInput, setPriceInput] = useState('');
+  const layerRef = useRef<HTMLDivElement>(null);
   const clickTimerRef = useRef<number | null>(null);
+  const dragRef = useRef({ id: '', moved: false });
   const activeScheme = schemes[Math.min(activeIndex, Math.max(0, schemes.length - 1))];
   const markers = activeScheme?.markers ?? [];
   const freeCount = markers.filter((marker) => marker.state === 'free').length;
@@ -103,7 +105,65 @@ export function SeatsPage() {
     }));
   }
 
+  function addFreeMarker() {
+    if (!activeScheme) return;
+    const nextNumber = activeScheme.markers.length + 1;
+    const marker: SeatMarker = {
+      bottom: { price: 'цена не указана', state: 'free' },
+      id: crypto.randomUUID(),
+      kind: 'bed',
+      label: `M${nextNumber}`,
+      price: 'цена не указана',
+      state: 'free',
+      top: { price: 'цена не указана', state: 'free' },
+      x: 50,
+      y: 50,
+    };
+
+    setSchemes((current) => current.map((scheme) => (
+      scheme.id === activeScheme.id ? { ...scheme, markers: [...scheme.markers, marker] } : scheme
+    )));
+  }
+
+  function moveMarker(id: string, x: number, y: number) {
+    setSchemes((current) => current.map((scheme) => {
+      if (scheme.id !== activeScheme?.id) return scheme;
+      return {
+        ...scheme,
+        markers: scheme.markers.map((marker) => (
+          marker.id === id ? { ...marker, x, y } : marker
+        )),
+      };
+    }));
+  }
+
+  function dragMarker(event: PointerEvent<HTMLButtonElement>, id: string) {
+    const rect = layerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+    dragRef.current.moved = true;
+    moveMarker(id, x, y);
+  }
+
+  function startMarkerDrag(event: PointerEvent<HTMLButtonElement>, id: string) {
+    dragRef.current = { id, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function moveMarkerDrag(event: PointerEvent<HTMLButtonElement>, id: string) {
+    if (dragRef.current.id !== id) return;
+    dragMarker(event, id);
+  }
+
+  function stopMarkerDrag() {
+    window.setTimeout(() => {
+      dragRef.current = { id: '', moved: false };
+    }, 0);
+  }
+
   function handleMarkerClick(id: string) {
+    if (dragRef.current.moved) return;
     if (isPriceMode) {
       openPriceEditor(id);
       return;
@@ -203,6 +263,9 @@ export function SeatsPage() {
         <button className={`price-mode-button${isPriceMode ? ' price-mode-button--active' : ''}`} onClick={() => setIsPriceMode((current) => !current)} type="button">
           Установить цену
         </button>
+        <button className="add-seat-marker-button" disabled={!activeScheme} onClick={addFreeMarker} type="button">
+          Добавить свободное место
+        </button>
 
         <section className={`building-scheme building-scheme--${activeScheme?.accent ?? 'green'}`} aria-label="Схема свободных мест">
           <div className="scheme-legend" aria-label="Легенда схемы">
@@ -213,7 +276,7 @@ export function SeatsPage() {
           {activeScheme ? (
             <div className="scheme-image-wrap">
               <img alt={activeScheme.name} src={activeScheme.imageUrl} />
-              <div className="scheme-marker-layer" aria-label="Кликабельные кровати">
+              <div className="scheme-marker-layer" aria-label="Кликабельные кровати" ref={layerRef}>
                 {activeScheme.markers.map((marker) => (
                   <button
                     aria-label={`${marker.label}: ${marker.price}`}
@@ -221,6 +284,9 @@ export function SeatsPage() {
                     key={marker.id}
                     onClick={() => handleMarkerClick(marker.id)}
                     onDoubleClick={() => openPriceEditor(marker.id)}
+                    onPointerDown={(event) => startMarkerDrag(event, marker.id)}
+                    onPointerMove={(event) => moveMarkerDrag(event, marker.id)}
+                    onPointerUp={stopMarkerDrag}
                     style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
                     type="button"
                   >

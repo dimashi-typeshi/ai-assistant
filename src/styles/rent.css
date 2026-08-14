@@ -370,13 +370,44 @@
     grid-template-columns: 1fr;
   }
 
+  .rent-card {
+    grid-template-columns: 1fr;
+  }
+
+  .rent-card__marker {
+    width: 100%;
+    height: 4px;
+    margin-top: 0;
+  }
+
+  .rent-card__action {
+    grid-column: auto;
+  }
+
   .rent-contract-card {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .rent-contract-card__marker,
+  .rent-payment-row__marker,
+  .rent-note-card__marker {
+    width: 100%;
+    height: 4px;
+    min-height: 4px;
   }
 
   .rent-contract-card__side {
-    grid-column: 2;
+    grid-column: auto;
     justify-items: start;
     text-align: left;
+  }
+
+  .rent-payment-row,
+  .rent-note-card {
+    grid-template-columns: 1fr;
+  }
+
+  .rent-payment-row small {
+    justify-self: start;
   }
 }

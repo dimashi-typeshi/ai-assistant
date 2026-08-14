@@ -204,4 +204,28 @@
   .request-fields {
     grid-template-columns: 1fr;
   }
+
+  .request-card__top,
+  .request-actions,
+  .note-card div {
+    flex-wrap: wrap;
+  }
+
+  .request-actions button,
+  .note-card button {
+    flex: 1 1 140px;
+  }
+}
+
+@media (max-width: 430px) {
+  .request-card,
+  .telegram-import {
+    padding: 12px;
+  }
+
+  .deadline-badge {
+    width: fit-content;
+    max-width: 100%;
+    white-space: normal;
+  }
 }

@@ -208,3 +208,45 @@
     padding: 6px;
   }
 }
+
+@media (max-width: 430px) {
+  .calendar-weekdays,
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-weekdays span {
+    font-size: 10px;
+  }
+
+  .calendar-day {
+    min-height: 38px;
+    padding: 4px 2px;
+    border-radius: 8px;
+  }
+
+  .calendar-day strong {
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  .calendar-color-row {
+    display: none;
+  }
+
+  .calendar-nav {
+    flex-wrap: wrap;
+  }
+
+  .calendar-nav button {
+    flex: 1 1 auto;
+  }
+
+  .day-request {
+    grid-template-columns: auto 1fr;
+  }
+
+  .day-request > small {
+    grid-column: 2;
+  }
+}

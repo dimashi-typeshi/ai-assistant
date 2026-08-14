@@ -78,15 +78,23 @@
   white-space: pre-wrap;
 }
 
-.price-mode-button {
+.price-mode-button,
+.add-seat-marker-button {
   min-height: 42px;
   margin-bottom: 14px;
+  margin-right: 8px;
   padding: 0 14px;
   background: var(--accent-soft);
   border: 1px solid rgba(79, 140, 255, 0.34);
   border-radius: 10px;
   color: #cfe0ff;
   font-weight: 820;
+}
+
+.add-seat-marker-button {
+  background: rgba(16, 163, 127, 0.12);
+  border-color: rgba(16, 163, 127, 0.34);
+  color: #86efac;
 }
 
 .price-mode-button--active {
@@ -217,9 +225,15 @@
   font-size: 11px;
   font-weight: 850;
   line-height: 1;
+  cursor: grab;
   pointer-events: auto;
+  touch-action: none;
   transform: translate(-50%, -50%);
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22), 0 0 0 4px rgba(255, 255, 255, 0.72);
+}
+
+.scheme-marker:active {
+  cursor: grabbing;
 }
 
 .scheme-marker span {
@@ -445,6 +459,52 @@
 
   .building-scheme {
     min-height: 260px;
+    overflow-x: hidden;
     padding: 10px;
+  }
+
+  .seats-uploader label,
+  .price-mode-button,
+  .add-seat-marker-button {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .scheme-legend {
+    justify-content: stretch;
+  }
+
+  .scheme-legend span {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .scheme-marker {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+
+  .scheme-marker--bunk {
+    height: 34px;
+  }
+
+  .scheme-marker span {
+    max-width: 130px;
+    white-space: normal;
+  }
+
+  .scheme-level {
+    min-width: 0;
+    width: 130px;
+  }
+
+  .scheme-switcher {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    justify-content: center;
+    border-radius: 12px;
   }
 }
