@@ -123,17 +123,30 @@ export function HomePage() {
             <div className="home-top-badge">
               сохрани 10 часов в неделю
             </div>
-            <article>
+            <article className="home-promo-card home-promo-card--ai">
               <strong>AI</strong>
-              <p>Генерация идей, текстов и анализ фото</p>
+              <div className="home-promo-visual home-promo-visual--ai" aria-label="AI чат и анализ">
+                <span />
+                <i />
+                <b />
+              </div>
             </article>
-            <article>
+            <article className="home-promo-card home-promo-card--payments">
               <strong>₸</strong>
-              <p>Платежи, статусы и напоминания</p>
+              <div className="home-promo-visual home-promo-visual--payments" aria-label="Платежи и статусы">
+                <span />
+                <span />
+                <span />
+              </div>
             </article>
-            <article>
+            <article className="home-promo-card home-promo-card--seats">
               <strong>SE</strong>
-              <p>Свободные места на схеме здания</p>
+              <div className="home-promo-visual home-promo-visual--seats" aria-label="Свободные места">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
             </article>
           </div>
         </section>

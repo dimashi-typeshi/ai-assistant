@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { SectionHeader } from '../components/SectionHeader';
+import { AppLanguage, getLanguage, languages, setLanguage } from '../lib/i18n';
 
 export function SettingsPage() {
   const [hideShapes, setHideShapes] = useState(() => localStorage.getItem('hideBackgroundShapes') === 'true');
+  const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(getLanguage);
   const supportText = 'Здравствуйте! Нужна помощь с приложением AI Assistant.';
 
   useEffect(() => {
@@ -15,12 +17,36 @@ export function SettingsPage() {
     await navigator.clipboard.writeText(supportText);
   }
 
+  function changeLanguage(language: AppLanguage) {
+    setCurrentLanguage(language);
+    setLanguage(language);
+  }
+
   return (
     <main className="mobile-app-shell">
       <section className="section-page settings-page">
         <SectionHeader subtitle="Фон, поддержка и безопасность аккаунта." title="Настройки" />
 
         <div className="settings-list">
+          <section className="settings-card settings-card--stack">
+            <div>
+              <h2>Языки</h2>
+              <p>Выбери язык интерфейса. Настройка сохранится на этом устройстве.</p>
+            </div>
+            <div className="settings-language-grid">
+              {languages.map((language) => (
+                <button
+                  className={currentLanguage === language.code ? 'settings-language settings-language--active' : 'settings-language'}
+                  key={language.code}
+                  onClick={() => changeLanguage(language.code)}
+                  type="button"
+                >
+                  {language.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
           <section className="settings-card">
             <div>
               <h2>Фон</h2>

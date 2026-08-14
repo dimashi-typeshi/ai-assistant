@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Route, Switch } from 'wouter';
 import { AuthStateRedirect } from './components/AuthStateRedirect';
 import { FloatingAiChat } from './components/FloatingAiChat';
@@ -12,8 +13,26 @@ import { ReportsPage } from './pages/ReportsPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { SeatsPage } from './pages/SeatsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { applyTranslations } from './lib/i18n';
 
 export default function App() {
+  useEffect(() => {
+    let frame = 0;
+    const translateSoon = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => applyTranslations());
+    };
+    const observer = new MutationObserver(translateSoon);
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('app-language-change', translateSoon);
+    translateSoon();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('app-language-change', translateSoon);
+    };
+  }, []);
+
   return (
     <>
       <AuthStateRedirect />

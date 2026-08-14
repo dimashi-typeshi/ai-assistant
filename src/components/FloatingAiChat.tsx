@@ -19,6 +19,7 @@ export function FloatingAiChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [position, setPosition] = useState(startPosition);
   const dragRef = useRef({ dx: 0, dy: 0, active: false });
+  const shouldShowHint = (location === '/' || location === '/dashboard') && !isOpen;
 
   if (location === '/chat') return null;
 
@@ -76,6 +77,7 @@ export function FloatingAiChat() {
 
   return (
     <>
+      {shouldShowHint && <div className="floating-ai-hint">я могу работать за тебя!</div>}
       <button className="floating-ai-button" aria-label="Открыть мини-чат ИИ" onClick={() => setIsOpen(true)} type="button">
         <span />
       </button>
