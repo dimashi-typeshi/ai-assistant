@@ -1,11 +1,13 @@
 import { ChatMessage, MessageBubble } from './MessageBubble';
+import type { ReactNode } from 'react';
 
 type ChatWindowProps = {
   messages: ChatMessage[];
   isLoading: boolean;
+  children?: ReactNode;
 };
 
-export function ChatWindow({ messages, isLoading }: ChatWindowProps) {
+export function ChatWindow({ children, messages, isLoading }: ChatWindowProps) {
   return (
     <section className="chat-window" aria-label="История чата">
       {messages.length === 0 ? (
@@ -29,6 +31,7 @@ export function ChatWindow({ messages, isLoading }: ChatWindowProps) {
           </div>
         </article>
       )}
+      {children}
     </section>
   );
 }

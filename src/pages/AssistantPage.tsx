@@ -138,21 +138,22 @@ export function AssistantPage() {
           <SectionHeader subtitle="ИИ может отвечать, анализировать фото и самостоятельно обновлять подходящие записи." title="Чат с ИИ" />
           <button className="chat-history-button" onClick={() => setIsHistoryOpen(true)} type="button">История</button>
         </div>
-        <ChatWindow isLoading={isLoading} messages={messages} />
+        <ChatWindow isLoading={isLoading} messages={messages}>
+          <ChatInput
+            imageName={imageFile?.name ?? ''}
+            isLoading={isLoading}
+            onChange={setInput}
+            onImageChange={setImageFile}
+            onSubmit={() => sendPrompt()}
+            value={input}
+          />
+        </ChatWindow>
         <p className="ai-disclaimer">ИИ может ошибаться</p>
 
         {error && <p className="alert">{error}</p>}
         {!isSupabaseConfigured && <p className="alert">Сначала добавь Supabase URL и ключ в .env.</p>}
 
         <PromptQuickActions disabled={isLoading} onSelect={sendPrompt} />
-        <ChatInput
-          imageName={imageFile?.name ?? ''}
-          isLoading={isLoading}
-          onChange={setInput}
-          onImageChange={setImageFile}
-          onSubmit={() => sendPrompt()}
-          value={input}
-        />
         {isHistoryOpen && (
           <ChatHistoryPanel chats={savedChats} onClose={() => setIsHistoryOpen(false)} onDelete={deleteSavedChat} onOpen={openSavedChat} />
         )}

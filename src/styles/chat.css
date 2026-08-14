@@ -334,6 +334,13 @@
   backdrop-filter: blur(18px);
 }
 
+.chat-window .chat-input {
+  bottom: 0;
+  margin-top: auto;
+  background: rgba(18, 18, 18, 0.94);
+  box-shadow: 0 -14px 38px rgba(0, 0, 0, 0.26);
+}
+
 .chat-input__body {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -817,6 +824,10 @@
     grid-template-columns: 1fr 36px;
   }
 
+  .chat-window .chat-input {
+    bottom: 0;
+  }
+
   .chat-input button {
     min-height: 36px;
   }
@@ -868,6 +879,10 @@
 
   .chat-input {
     grid-template-columns: 1fr;
+  }
+
+  .chat-window .chat-input {
+    margin-top: auto;
   }
 
   .chat-input__body {
