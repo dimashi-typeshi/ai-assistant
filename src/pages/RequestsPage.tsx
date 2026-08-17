@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Auth } from '../components/Auth';
 import { RequestCard } from '../components/RequestCard';
+import { EmptyState } from '../components/EmptyState';
 import { RequestForm } from '../components/RequestForm';
 import { RequestsCalendar } from '../components/RequestsCalendar';
 import { RequestsDayList } from '../components/RequestsDayList';
@@ -93,7 +94,13 @@ export function RequestsPage() {
             {selectedRequest ? (
               <RequestCard key={selectedRequest.id} onDelete={remove} onUpdate={change} request={selectedRequest} />
             ) : (
-              <p className="empty-state">Выбери дату с дедлайном или создай новую заявку.</p>
+              <EmptyState
+                actionHref="/requests"
+                actionLabel="Создать заявку"
+                icon="+"
+                text="Добавьте одну задачу с дедлайном. Приложение дальше будет держать её на виду."
+                title="Начните с одной заявки"
+              />
             )}
           </>
         )}

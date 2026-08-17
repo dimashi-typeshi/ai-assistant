@@ -1,8 +1,10 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { type MouseEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { AppTile } from '../components/AppTile';
 import { HomeAdShowcase } from '../components/HomeAdShowcase';
 import { HomeFooter } from '../components/HomeFooter';
+import { ReviewsRail } from '../components/ReviewsRail';
+import overloadedFounderImage from '../assets/overloaded-founder.png';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
@@ -55,6 +57,12 @@ export function HomePage() {
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
+  function moveTextSpotlight(event: MouseEvent<HTMLElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--spotlight-x', `${event.clientX - bounds.left}px`);
+    event.currentTarget.style.setProperty('--spotlight-y', `${event.clientY - bounds.top}px`);
+  }
+
   useLayoutEffect(() => {
     window.scrollTo({ left: 0, top: 0 });
   }, []);
@@ -104,16 +112,113 @@ export function HomePage() {
             <strong>{tile.label}</strong>
           </Link>
         ))}
+        <ReviewsRail />
       </aside>
 
-      <section className="mobile-home">
-        <section className="home-hook-workspace" aria-label="Место для работы над хуком">
-          <span>Место для хука</span>
-        </section>
+        <section className="mobile-home">
+          <section className="home-hook-workspace" aria-label="Место для работы над хуком">
+            <div className="home-hook-workspace__copy">
+              <span>Welcome-экран</span>
+              <h2 className="text-spotlight" onMouseMove={moveTextSpotlight}>Хватит держать всё в голове</h2>
+              <p>Соберите задачи, дедлайны и мелкие хвосты в одном спокойном месте.</p>
+              <div className="home-hook-workspace__actions">
+                <Link className="home-hook-workspace__cta" href="/requests">Разгрести день</Link>
+                <Link className="home-hook-workspace__login" href="/profile">Логин</Link>
+                <small>Первый шаг: добавьте одну задачу, остальное разложим по срокам.</small>
+              </div>
+            </div>
+            <div className="home-hook-workspace__visual">
+              <img
+                alt="Уставший предприниматель рядом с задачами и дедлайнами"
+                className="home-hook-workspace__image"
+                src={overloadedFounderImage}
+              />
+            </div>
+            <div className="home-hook-workspace__slider">
+              <div className="feature-slideshow" aria-label="Возможности приложения">
+                <div className="feature-slideshow__track">
+                  <article className="feature-slide feature-slide--tasks">
+                    <div className="feature-slide__top">
+                      <span>Задачи</span>
+                      <strong>Список без шума</strong>
+                    </div>
+                    <div className="feature-slide__visual" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </div>
+                  </article>
+                  <article className="feature-slide feature-slide--calendar">
+                    <div className="feature-slide__top">
+                      <span>Дедлайны</span>
+                      <strong>Календарь держит сроки</strong>
+                    </div>
+                    <div className="feature-slide__visual" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                      <i />
+                    </div>
+                  </article>
+                  <article className="feature-slide feature-slide--ai">
+                    <div className="feature-slide__top">
+                      <span>ИИ</span>
+                      <strong>Черновик за минуту</strong>
+                    </div>
+                    <div className="feature-slide__visual" aria-hidden="true">
+                      <i />
+                      <i />
+                    </div>
+                  </article>
+                  <article className="feature-slide feature-slide--reports">
+                    <div className="feature-slide__top">
+                      <span>Отчёты</span>
+                      <strong>Сводка сама собралась</strong>
+                    </div>
+                    <div className="feature-slide__visual" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </div>
+                  </article>
+                </div>
+                <div className="feature-slideshow__dots" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            </div>
+            <div className="home-hook-workspace__steps">
+              <div className="routine-path" aria-label="Порядок действий для избавления от рутины">
+                <div className="routine-path__item">
+                  <span aria-hidden="true">1</span>
+                  <strong>Скиньте задачи в приложение</strong>
+                </div>
+                <div className="routine-path__item">
+                  <span aria-hidden="true">2</span>
+                  <strong>Расставьте сроки и приоритеты</strong>
+                </div>
+                <div className="routine-path__item">
+                  <span aria-hidden="true">3</span>
+                  <strong>Доверьте напоминания системе</strong>
+                </div>
+                <div className="routine-path__item routine-path__item--goal">
+                  <span aria-hidden="true">✓</span>
+                  <strong>Конечная цель - нет рутины</strong>
+                </div>
+              </div>
+              <Link className="home-hook-workspace__try" href="/requests">
+                <span>Попробовать</span>
+                <span>сейчас</span>
+              </Link>
+            </div>
+          </section>
 
-        <section className="home-promo">
-          <div className="home-promo__copy">
-            <h1>
+          <section className="home-promo">
+            <div className="home-promo__copy">
+              <h1 className="text-spotlight" onMouseMove={moveTextSpotlight}>
               Управляй бизнесом быстрее
               <span>с AI workspace</span>
             </h1>
@@ -124,9 +229,6 @@ export function HomePage() {
             </div>
           </div>
           <div className="home-promo__stats">
-            <div className="home-top-badge">
-              сохрани 10 часов в неделю
-            </div>
             <article className="home-promo-card home-promo-card--ai">
               <strong>AI</strong>
               <div className="home-promo-visual home-promo-visual--ai" aria-label="AI чат и анализ">
@@ -163,6 +265,9 @@ export function HomePage() {
         {cleanQuery && searchResults.length === 0 && (
           <p className="empty-state">Ничего не найдено. Попробуй другой запрос.</p>
         )}
+        <div className="home-mobile-reviews">
+          <ReviewsRail />
+        </div>
         <HomeAdShowcase />
         <HomeFooter />
       </section>

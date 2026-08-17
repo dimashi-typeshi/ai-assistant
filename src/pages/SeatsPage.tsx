@@ -1,4 +1,5 @@
 import { ClipboardEvent, ChangeEvent, PointerEvent, useEffect, useRef, useState } from 'react';
+import { EmptyState } from '../components/EmptyState';
 import { SectionHeader } from '../components/SectionHeader';
 import { readPhotoAsDataUrl, splitDataUrl } from '../lib/photos';
 import { analyzeSeatScheme, SeatMarker, SeatSchemeDesign } from '../lib/seatsAi';
@@ -310,10 +311,11 @@ export function SeatsPage() {
               </div>
             </div>
           ) : (
-            <div className="scheme-empty">
-              <strong>Загрузите фото схемы</strong>
-              <span>ИИ поставит кликабельные значки прямо на найденные кровати.</span>
-            </div>
+            <EmptyState
+              icon="⌂"
+              text="Загрузите фото схемы. ИИ найдёт места, а вы потом спокойно проставите цены и статусы."
+              title="Схемы пока нет"
+            />
           )}
         </section>
         {editingMarkerId && (

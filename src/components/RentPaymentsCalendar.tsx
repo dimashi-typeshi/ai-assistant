@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { PhotoUpload } from './PhotoUpload';
+import { EmptyState } from './EmptyState';
 import { RentPaymentForm } from './RentPaymentForm';
 import { formatRentAmount, formatRentDate, RentPayment } from '../lib/rent';
 
@@ -93,7 +94,11 @@ export function RentPaymentsCalendar({ disabled, onCreate, payments }: RentPayme
             </article>
           ))
         ) : (
-          <p className="empty-state">На эту дату оплат пока нет. Добавьте первый платёж аренды.</p>
+          <EmptyState
+            icon="₸"
+            text="Отлично, ничего не горит. Добавьте платёж выше, если хотите, чтобы дата не потерялась."
+            title="На эту дату оплат нет"
+          />
         )}
       </section>
     </>

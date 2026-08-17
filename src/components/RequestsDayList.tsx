@@ -1,5 +1,6 @@
 import { RequestItem, RequestStatus } from '../lib/requests';
 import { DeadlineBadge, getDeadlineState } from './DeadlineBadge';
+import { EmptyState } from './EmptyState';
 
 type RequestsDayListProps = {
   requests: RequestItem[];
@@ -15,7 +16,17 @@ function statusLabel(status: RequestStatus) {
 }
 
 export function RequestsDayList({ requests, selectedId, onSelect, onUpdate }: RequestsDayListProps) {
-  if (requests.length === 0) return <p className="empty-state">На выбранную дату заявок нет.</p>;
+  if (requests.length === 0) {
+    return (
+      <EmptyState
+        actionHref="/requests"
+        actionLabel="Добавить первую заявку"
+        icon="✓"
+        text="Чисто и спокойно. Когда появится новая задача, добавьте её выше и поставьте срок."
+        title="На этот день пока тихо"
+      />
+    );
+  }
 
   return (
     <section className="day-list">
