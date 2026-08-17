@@ -343,7 +343,9 @@
   transition: width 240ms ease, box-shadow 240ms ease;
 }
 
-.home-rail:hover {
+.home-rail:hover,
+.home-rail:focus-within,
+.home-rail:has(.reviews-rail--open) {
   width: 320px;
   box-shadow: 20px 0 40px rgba(0, 0, 0, 0.28);
 }
@@ -384,7 +386,9 @@
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.home-rail:hover .home-rail-link strong {
+.home-rail:hover .home-rail-link strong,
+.home-rail:focus-within .home-rail-link strong,
+.home-rail:has(.reviews-rail--open) .home-rail-link strong {
   opacity: 1;
   transform: translateX(0);
 }
@@ -407,7 +411,15 @@
   border-radius: 8px;
   background: rgba(134, 239, 172, 0.1);
   color: #86efac;
+  cursor: pointer;
+  font: inherit;
   font-weight: 900;
+}
+
+.reviews-rail__mark:hover,
+.reviews-rail__mark:focus-visible {
+  border-color: rgba(134, 239, 172, 0.5);
+  outline: none;
 }
 
 .reviews-rail__body {
@@ -418,7 +430,10 @@
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.home-rail:hover .reviews-rail__body {
+.home-rail:hover .reviews-rail__body,
+.home-rail:focus-within .reviews-rail__body,
+.reviews-rail--open .reviews-rail__body,
+.home-mobile-reviews .reviews-rail__body {
   opacity: 1;
   transform: translateX(0);
 }

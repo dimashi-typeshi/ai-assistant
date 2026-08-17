@@ -7,6 +7,7 @@ export function ReviewsRail() {
   const [text, setText] = useState('');
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
 
   async function refresh() {
@@ -42,8 +43,16 @@ export function ReviewsRail() {
   }
 
   return (
-    <section className="reviews-rail" aria-label="Отзывы пользователей">
-      <div className="reviews-rail__mark" aria-hidden="true">★</div>
+    <section className={`reviews-rail${isOpen ? ' reviews-rail--open' : ''}`} aria-label="Отзывы пользователей">
+      <button
+        aria-expanded={isOpen}
+        aria-label="Открыть отзывы"
+        className="reviews-rail__mark"
+        onClick={() => setIsOpen((current) => !current)}
+        type="button"
+      >
+        ★
+      </button>
       <div className="reviews-rail__body">
         <h2>Отзывы</h2>
         <form onSubmit={submit}>
