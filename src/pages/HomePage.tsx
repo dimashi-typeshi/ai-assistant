@@ -1,10 +1,14 @@
-import { type MouseEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'wouter';
+import { type CSSProperties, type MouseEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation } from 'wouter';
 import { AppTile } from '../components/AppTile';
 import { HomeAdShowcase } from '../components/HomeAdShowcase';
 import { HomeFooter } from '../components/HomeFooter';
 import { ReviewsRail } from '../components/ReviewsRail';
 import overloadedFounderImage from '../assets/overloaded-founder.png';
+import slideAiImage from '../assets/slide-ai.png';
+import slideDeadlinesImage from '../assets/slide-deadlines.png';
+import slideReportsImage from '../assets/slide-reports.png';
+import slideTasksImage from '../assets/slide-tasks.png';
 
 const tiles = [
   { href: '/chat', icon: 'AI', label: 'Чат с ИИ', text: 'Идеи, тексты и ответы' },
@@ -36,7 +40,10 @@ const profileTile = tiles.find((tile) => tile.href === '/profile') ?? tiles[tile
 export function HomePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
+  const [location] = useLocation();
+  const [isRailOpen, setIsRailOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [rocketShift, setRocketShift] = useState(0);
   const [query, setQuery] = useState('');
   const cleanQuery = query.trim().toLowerCase();
   const dashboardTiles = tiles.filter((tile) => tile.href !== '/profile');
@@ -67,8 +74,29 @@ export function HomePage() {
     window.scrollTo({ left: 0, top: 0 });
   }, []);
 
+  useEffect(() => {
+    function updateRocketShift() {
+      setRocketShift(Math.min(window.scrollY, 900));
+    }
+
+    updateRocketShift();
+    window.addEventListener('scroll', updateRocketShift, { passive: true });
+    return () => window.removeEventListener('scroll', updateRocketShift);
+  }, []);
+
   return (
     <main className="mobile-app-shell home-dashboard-shell">
+      <button
+        aria-expanded={isRailOpen}
+        aria-label={isRailOpen ? 'Закрыть меню разделов' : 'Открыть меню разделов'}
+        className="home-rail-toggle"
+        onClick={() => setIsRailOpen((current) => !current)}
+        type="button"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
       <nav className="home-topbar">
         <Link className="home-ai-mark" href="/chat" aria-label="Открыть чат с ИИ">
           <span>A</span>
@@ -105,9 +133,9 @@ export function HomePage() {
         </div>
       </nav>
 
-      <aside className="home-rail" aria-label="Быстрая навигация">
+      <aside className={`home-rail${isRailOpen ? ' home-rail--open' : ''}`} aria-label="Быстрая навигация">
         {railTiles.map((tile) => (
-          <Link className="home-rail-link" href={tile.href} key={tile.href}>
+          <Link className={location === tile.href ? 'home-rail-link home-rail-link--active' : 'home-rail-link'} href={tile.href} key={tile.href}>
             <span>{tile.icon}</span>
             <strong>{tile.label}</strong>
           </Link>
@@ -118,7 +146,6 @@ export function HomePage() {
         <section className="mobile-home">
           <section className="home-hook-workspace" aria-label="Место для работы над хуком">
             <div className="home-hook-workspace__copy">
-              <span>Welcome-экран</span>
               <h2 className="text-spotlight" onMouseMove={moveTextSpotlight}>Хватит держать всё в голове</h2>
               <p>Соберите задачи, дедлайны и мелкие хвосты в одном спокойном месте.</p>
               <div className="home-hook-workspace__actions">
@@ -135,6 +162,13 @@ export function HomePage() {
               />
             </div>
             <div className="home-hook-workspace__slider">
+              <div className="rocket-parallax" style={{ '--rocket-shift': `${rocketShift}px` } as CSSProperties} aria-hidden="true">
+                <span className="rocket-parallax__moon" />
+                <span className="rocket-parallax__trail" />
+                <span className="rocket-parallax__rocket">
+                  <i />
+                </span>
+              </div>
               <div className="feature-slideshow" aria-label="Возможности приложения">
                 <div className="feature-slideshow__track">
                   <article className="feature-slide feature-slide--tasks">
@@ -143,10 +177,11 @@ export function HomePage() {
                       <strong>Список без шума</strong>
                     </div>
                     <div className="feature-slide__visual" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
+                      <img alt="" src={slideTasksImage} />
+                      <span className="slide-sticker slide-sticker--top">Focus</span>
+                      <span className="slide-sticker slide-sticker--right">4/4 done</span>
                     </div>
+                    <p>Соберите дела в один список и снимите их с головы.</p>
                   </article>
                   <article className="feature-slide feature-slide--calendar">
                     <div className="feature-slide__top">
@@ -154,11 +189,11 @@ export function HomePage() {
                       <strong>Календарь держит сроки</strong>
                     </div>
                     <div className="feature-slide__visual" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
+                      <img alt="" src={slideDeadlinesImage} />
+                      <span className="slide-sticker slide-sticker--top">On time</span>
+                      <span className="slide-sticker slide-sticker--right">24h left</span>
                     </div>
+                    <p>Даты, напоминания и приоритеты держатся рядом.</p>
                   </article>
                   <article className="feature-slide feature-slide--ai">
                     <div className="feature-slide__top">
@@ -166,9 +201,11 @@ export function HomePage() {
                       <strong>Черновик за минуту</strong>
                     </div>
                     <div className="feature-slide__visual" aria-hidden="true">
-                      <i />
-                      <i />
+                      <img alt="" src={slideAiImage} />
+                      <span className="slide-sticker slide-sticker--top">Draft ready</span>
+                      <span className="slide-sticker slide-sticker--right">AI assist</span>
                     </div>
+                    <p>Попросите ИИ написать, разобрать или подсказать следующий шаг.</p>
                   </article>
                   <article className="feature-slide feature-slide--reports">
                     <div className="feature-slide__top">
@@ -176,10 +213,11 @@ export function HomePage() {
                       <strong>Сводка сама собралась</strong>
                     </div>
                     <div className="feature-slide__visual" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
+                      <img alt="" src={slideReportsImage} />
+                      <span className="slide-sticker slide-sticker--top">KPI +18%</span>
+                      <span className="slide-sticker slide-sticker--right">Report</span>
                     </div>
+                    <p>Сводка по работе собирается без ручной возни.</p>
                   </article>
                 </div>
                 <div className="feature-slideshow__dots" aria-hidden="true">

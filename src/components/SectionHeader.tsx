@@ -1,4 +1,5 @@
 import { Link } from 'wouter';
+import { ToolSwitcher } from './ToolSwitcher';
 
 type SectionHeaderProps = {
   title: string;
@@ -16,6 +17,7 @@ export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
         <h1>{title}</h1>
         <p>{subtitle}</p>
       </div>
+      <ToolSwitcher />
     </header>
   );
 }

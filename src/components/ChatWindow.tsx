@@ -1,5 +1,4 @@
 import { ChatMessage, MessageBubble } from './MessageBubble';
-import { EmptyState } from './EmptyState';
 import type { ReactNode } from 'react';
 
 type ChatWindowProps = {
@@ -12,11 +11,13 @@ export function ChatWindow({ children, messages, isLoading }: ChatWindowProps) {
   return (
     <section className="chat-window" aria-label="История чата">
       {messages.length === 0 ? (
-        <EmptyState
-          icon="AI"
-          text="Опишите задачу обычными словами или выберите готовый сценарий ниже. ИИ поможет разложить хаос по полкам."
-          title="С чего начнём?"
-        />
+        <div className="chat-empty">
+          <span className="ai-avatar ai-avatar--large" aria-hidden="true">
+            <span />
+          </span>
+          <h2>Чем помочь сегодня?</h2>
+          <p>Напиши задачу или выбери готовый сценарий ниже.</p>
+        </div>
       ) : (
         messages.map((message) => <MessageBubble key={message.id} message={message} />)
       )}
