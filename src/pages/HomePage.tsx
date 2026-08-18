@@ -254,6 +254,27 @@ export function HomePage() {
             </div>
           </section>
 
+          <section className="home-onboarding" aria-label="Быстрый старт">
+            <div>
+              <span>01</span>
+              <strong>Войдите в профиль</strong>
+              <p>Так заявки, платежи и аренда сохранятся именно для вас.</p>
+              <Link href="/profile">Открыть профиль</Link>
+            </div>
+            <div>
+              <span>02</span>
+              <strong>Заполните примерами</strong>
+              <p>В разделах есть примеры, которые можно удалить одной кнопкой.</p>
+              <Link href="/requests">Начать с заявок</Link>
+            </div>
+            <div>
+              <span>03</span>
+              <strong>Соберите отчёт</strong>
+              <p>Когда появятся данные, AI сделает короткую сводку по работе.</p>
+              <Link href="/reports">Открыть отчёты</Link>
+            </div>
+          </section>
+
           <section className="home-promo">
             <div className="home-promo__copy">
               <h1 className="text-spotlight" onMouseMove={moveTextSpotlight}>

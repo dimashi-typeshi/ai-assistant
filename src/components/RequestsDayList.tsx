@@ -21,8 +21,8 @@ export function RequestsDayList({ requests, selectedId, onSelect, onUpdate }: Re
       <EmptyState
         actionHref="/requests"
         actionLabel="Добавить первую заявку"
-        icon="✓"
-        text="Чисто и спокойно. Когда появится новая задача, добавьте её выше и поставьте срок."
+        icon="OK"
+        text="Когда появится новая задача, добавьте её выше и поставьте срок."
         title="На этот день пока тихо"
       />
     );

@@ -1,3 +1,4 @@
+import { EmptyState } from './EmptyState';
 import { PhotoUpload } from './PhotoUpload';
 import { RentContractForm } from './RentContractForm';
 import { formatRentAmount, formatRentDate, RentContract } from '../lib/rent';
@@ -35,24 +36,26 @@ export function RentContractsPanel({ contracts, disabled, onCreate }: RentContra
     <>
       <PhotoUpload disabled={disabled} section="rent-contracts" title="Фото договоров" />
       <RentContractForm disabled={disabled} onCreate={onCreate} />
-      <div className="rent-contract-list">
-        {contracts.map((contract) => (
-          <article className="rent-contract-card" key={contract.id}>
-            <span className="rent-contract-card__marker" />
-            <div>
-              <h2>{contract.objectName}</h2>
-              <p>{contract.tenantName}</p>
-              <small>
-                {formatRentDate(contract.startsAt)} - {formatRentDate(contract.endsAt)}
-              </small>
-            </div>
-            <div className="rent-contract-card__side">
-              <strong>{formatRentAmount(contract.monthlyAmount)}</strong>
-              <span>{getStatusText(contract)}</span>
-            </div>
-          </article>
-        ))}
-      </div>
+      {contracts.length === 0 ? (
+        <EmptyState icon="AR" text="Добавьте первый договор, чтобы видеть сроки, арендатора и сумму в месяц." title="Договоров пока нет" />
+      ) : (
+        <div className="rent-contract-list">
+          {contracts.map((contract) => (
+            <article className="rent-contract-card" key={contract.id}>
+              <span className="rent-contract-card__marker" />
+              <div>
+                <h2>{contract.objectName}</h2>
+                <p>{contract.tenantName}</p>
+                <small>{formatRentDate(contract.startsAt)} - {formatRentDate(contract.endsAt)}</small>
+              </div>
+              <div className="rent-contract-card__side">
+                <strong>{formatRentAmount(contract.monthlyAmount)}</strong>
+                <span>{getStatusText(contract)}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </>
   );
 }

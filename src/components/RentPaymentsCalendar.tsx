@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { PhotoUpload } from './PhotoUpload';
 import { EmptyState } from './EmptyState';
+import { PhotoUpload } from './PhotoUpload';
 import { RentPaymentForm } from './RentPaymentForm';
 import { formatRentAmount, formatRentDate, RentPayment } from '../lib/rent';
 
@@ -13,22 +13,24 @@ type RentPaymentsCalendarProps = {
 const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 function toDateKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function todayKey() {
   return toDateKey(new Date());
 }
 
-function getMonthDays() {
-  const today = new Date();
-  const first = new Date(today.getFullYear(), today.getMonth(), 1);
-  const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+function getMonthDays(monthDate: Date) {
+  const first = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const last = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
   const offset = (first.getDay() + 6) % 7;
   const days: (Date | null)[] = Array.from({ length: offset }, () => null);
 
   for (let day = 1; day <= last.getDate(); day += 1) {
-    days.push(new Date(today.getFullYear(), today.getMonth(), day));
+    days.push(new Date(monthDate.getFullYear(), monthDate.getMonth(), day));
   }
 
   return days;
@@ -40,10 +42,28 @@ function isOverdue(payment: RentPayment) {
 
 export function RentPaymentsCalendar({ disabled, onCreate, payments }: RentPaymentsCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(todayKey());
-  const monthTitle = new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-  const monthDays = useMemo(() => getMonthDays(), []);
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date());
+  const monthTitle = visibleMonth.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  const monthDays = useMemo(() => getMonthDays(visibleMonth), [visibleMonth]);
   const selectedPayments = payments.filter((payment) => payment.dueAt === selectedDate);
-  const plannedCount = payments.filter((payment) => !payment.isPaid).length;
+  const monthPayments = payments.filter((payment) => {
+    const dueDate = new Date(`${payment.dueAt}T00:00:00`);
+    return dueDate.getFullYear() === visibleMonth.getFullYear() && dueDate.getMonth() === visibleMonth.getMonth();
+  });
+
+  function changeMonth(offset: number) {
+    setVisibleMonth((current) => {
+      const next = new Date(current.getFullYear(), current.getMonth() + offset, 1);
+      setSelectedDate(toDateKey(next));
+      return next;
+    });
+  }
+
+  function returnToday() {
+    const today = new Date();
+    setVisibleMonth(today);
+    setSelectedDate(todayKey());
+  }
 
   return (
     <>
@@ -51,8 +71,15 @@ export function RentPaymentsCalendar({ disabled, onCreate, payments }: RentPayme
       <RentPaymentForm disabled={disabled} onCreate={onCreate} />
       <section className="calendar-panel">
         <div className="calendar-header">
-          <h2>{monthTitle}</h2>
-          <span>{plannedCount} оплат</span>
+          <div>
+            <h2>{monthTitle}</h2>
+            <span>{monthPayments.length} оплат</span>
+          </div>
+          <div className="calendar-nav">
+            <button aria-label="Предыдущий месяц" onClick={() => changeMonth(-1)} type="button">‹</button>
+            <button onClick={returnToday} type="button">Сегодня</button>
+            <button aria-label="Следующий месяц" onClick={() => changeMonth(1)} type="button">›</button>
+          </div>
         </div>
         <div className="calendar-weekdays">
           {weekDays.map((day) => <span key={day}>{day}</span>)}
@@ -96,7 +123,7 @@ export function RentPaymentsCalendar({ disabled, onCreate, payments }: RentPayme
         ) : (
           <EmptyState
             icon="₸"
-            text="Отлично, ничего не горит. Добавьте платёж выше, если хотите, чтобы дата не потерялась."
+            text="На выбранный день оплат нет. Добавьте платёж выше, если хотите сохранить дату."
             title="На эту дату оплат нет"
           />
         )}

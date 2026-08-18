@@ -19,7 +19,7 @@ export type RequestNote = {
   updated_at: string;
 };
 
-export async function loadRequests() {
+export function loadRequests() {
   return supabase
     .from('requests')
     .select('id, title, status, deadline_at, label_color, created_at')
@@ -27,29 +27,42 @@ export async function loadRequests() {
 }
 
 export async function createRequest(title: string, deadlineAt: string | null, labelColor: string) {
-  return supabase
+  return await supabase
     .from('requests')
     .insert({
+      deadline_at: deadlineAt,
       label_color: labelColor,
       title,
-      deadline_at: deadlineAt,
     })
     .select('id')
     .single();
 }
 
 export async function updateRequest(id: string, status: RequestStatus, deadlineAt: string | null, labelColor: string) {
-  return supabase
+  return await supabase
     .from('requests')
-    .update({ status, deadline_at: deadlineAt, label_color: labelColor, updated_at: new Date().toISOString() })
+    .update({ deadline_at: deadlineAt, label_color: labelColor, status, updated_at: new Date().toISOString() })
     .eq('id', id);
 }
 
 export async function deleteRequest(id: string) {
-  return supabase.from('requests').delete().eq('id', id);
+  return await supabase.from('requests').delete().eq('id', id);
 }
 
-export async function loadNotes(requestId: string) {
+export async function seedDemoRequests() {
+  await clearDemoRequests();
+  return supabase.from('requests').insert([
+    { deadline_at: '2026-08-20T09:00:00.000Z', is_demo: true, label_color: '#4f8cff', status: 'new', title: 'Ответить клиенту по баннеру' },
+    { deadline_at: '2026-08-21T15:00:00.000Z', is_demo: true, label_color: '#10a37f', status: 'in_progress', title: 'Проверить оплату аренды' },
+    { deadline_at: '2026-08-23T12:00:00.000Z', is_demo: true, label_color: '#f59e0b', status: 'new', title: 'Подготовить отчёт за неделю' },
+  ]);
+}
+
+export async function clearDemoRequests() {
+  return await supabase.from('requests').delete().eq('is_demo', true);
+}
+
+export function loadNotes(requestId: string) {
   return supabase
     .from('request_notes')
     .select('id, request_id, text, created_at, updated_at')
@@ -58,13 +71,13 @@ export async function loadNotes(requestId: string) {
 }
 
 export async function createNote(requestId: string, text: string) {
-  return supabase.from('request_notes').insert({ request_id: requestId, text });
+  return await supabase.from('request_notes').insert({ request_id: requestId, text });
 }
 
 export async function updateNote(id: string, text: string) {
-  return supabase.from('request_notes').update({ text, updated_at: new Date().toISOString() }).eq('id', id);
+  return await supabase.from('request_notes').update({ text, updated_at: new Date().toISOString() }).eq('id', id);
 }
 
 export async function deleteNote(id: string) {
-  return supabase.from('request_notes').delete().eq('id', id);
+  return await supabase.from('request_notes').delete().eq('id', id);
 }

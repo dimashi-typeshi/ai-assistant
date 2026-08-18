@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Auth } from '../components/Auth';
-import { RequestCard } from '../components/RequestCard';
+import { DemoActions } from '../components/DemoActions';
 import { EmptyState } from '../components/EmptyState';
+import { RequestCard } from '../components/RequestCard';
 import { RequestForm } from '../components/RequestForm';
 import { RequestsCalendar } from '../components/RequestsCalendar';
 import { RequestsDayList } from '../components/RequestsDayList';
 import { SectionHeader } from '../components/SectionHeader';
 import { TelegramImportForm } from '../components/TelegramImportForm';
-import { RequestItem, RequestStatus, createNote, createRequest, deleteRequest, loadRequests, updateRequest } from '../lib/requests';
+import { RequestItem, RequestStatus, clearDemoRequests, createNote, createRequest, deleteRequest, loadRequests, seedDemoRequests, updateRequest } from '../lib/requests';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${today.getFullYear()}-${month}-${day}`;
 }
 
 export function RequestsPage() {
@@ -86,6 +90,7 @@ export function RequestsPage() {
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth />}
         {isSignedIn && (
           <>
+            <DemoActions disabled={isBusy} onClear={() => { void run(clearDemoRequests); setSelectedRequestId(''); }} onSeed={() => void run(seedDemoRequests)} />
             <TelegramImportForm disabled={isBusy} onCreate={importFromTelegram} />
             <RequestForm disabled={isBusy} onCreate={add} />
             {error && <p className="alert">{error}</p>}
@@ -98,7 +103,7 @@ export function RequestsPage() {
                 actionHref="/requests"
                 actionLabel="Создать заявку"
                 icon="+"
-                text="Добавьте одну задачу с дедлайном. Приложение дальше будет держать её на виду."
+                text="Добавьте одну задачу с дедлайном. После этого календарь будет держать её на виду."
                 title="Начните с одной заявки"
               />
             )}

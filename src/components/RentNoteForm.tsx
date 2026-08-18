@@ -11,30 +11,17 @@ export function RentNoteForm({ disabled, onCreate }: RentNoteFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const cleanObjectName = objectName.trim();
-    const cleanText = text.trim();
-    if (!cleanObjectName || !cleanText) return;
+    if (!objectName.trim() || !text.trim()) return;
 
-    await onCreate(cleanObjectName, cleanText);
+    await onCreate(objectName.trim(), text.trim());
     setObjectName('');
     setText('');
   }
 
   return (
     <form className="rent-form" onSubmit={handleSubmit}>
-      <input
-        disabled={disabled}
-        onChange={(event) => setObjectName(event.target.value)}
-        placeholder="Объект"
-        value={objectName}
-      />
-      <textarea
-        disabled={disabled}
-        onChange={(event) => setText(event.target.value)}
-        placeholder="Заметка по объекту"
-        rows={4}
-        value={text}
-      />
+      <input disabled={disabled} onChange={(event) => setObjectName(event.target.value)} placeholder="Объект" value={objectName} />
+      <textarea disabled={disabled} onChange={(event) => setText(event.target.value)} placeholder="Заметка по объекту" rows={4} value={text} />
       <button disabled={disabled || !objectName.trim() || !text.trim()} type="submit">
         Добавить заметку
       </button>

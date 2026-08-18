@@ -51,7 +51,7 @@ export function AssistantPage() {
   }
 
   function saveChat(nextMessages: ChatMessage[]) {
-    const cleanMessages = nextMessages.map(({ id, role, text }) => ({ id, role, text }));
+    const cleanMessages = nextMessages.map(({ actionHref, actionLabel, id, role, text }) => ({ actionHref, actionLabel, id, role, text }));
     const nextChat: SavedChat = {
       id: activeChatId,
       messages: cleanMessages,
@@ -107,7 +107,11 @@ export function AssistantPage() {
       const actionResult = await applySuggestedTabActions(prompt);
       if (actionResult.error) setError(actionResult.error);
       else if (actionResult.appliedCount > 0) {
-        updateMessages([...messagesRef.current, createMessage('assistant', `Готово, я сам обновил записи: ${actionResult.appliedCount}`)]);
+        updateMessages([...messagesRef.current, {
+          ...createMessage('assistant', `Готово, я обновил записи: ${actionResult.appliedCount}`),
+          actionHref: actionResult.href,
+          actionLabel: actionResult.label,
+        }]);
         saveChat(messagesRef.current);
       }
 

@@ -11,7 +11,10 @@ type RequestsCalendarProps = {
 const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 function toDateKey(date: Date) {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function sameDayRequests(requests: RequestItem[], dateKey: string) {
@@ -35,7 +38,7 @@ function getMonthDays(monthDate: Date) {
 }
 
 export function RequestsCalendar({ requests, selectedDate, onSelectDate }: RequestsCalendarProps) {
-  const [visibleMonth, setVisibleMonth] = useState(() => new Date(selectedDate));
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date(`${selectedDate}T00:00:00`));
   const title = visibleMonth.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
   const monthRequests = requests.filter((request) => {
     const deadline = request.deadline_at ? new Date(request.deadline_at) : null;

@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { invokeAi } from './aiFunction';
 
 const systemPrompt = [
   'Ты ИИ-ассистент для малого бизнеса.',
@@ -20,17 +20,7 @@ export type AiImageInput = {
 };
 
 export async function askBusinessAssistant(prompt: string, image?: AiImageInput) {
-  const { data, error } = await supabase.functions.invoke<AiResponse>('ai', {
-    body: { image, prompt, system: systemPrompt },
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (data?.error) {
-    throw new Error(data.error);
-  }
+  const data = await invokeAi<AiResponse>({ image, prompt, system: systemPrompt });
 
   if (!data?.text) {
     throw new Error('AI вернул пустой ответ. Попробуй переформулировать задачу.');

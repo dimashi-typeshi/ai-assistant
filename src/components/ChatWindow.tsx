@@ -1,5 +1,5 @@
-import { ChatMessage, MessageBubble } from './MessageBubble';
 import type { ReactNode } from 'react';
+import { ChatMessage, MessageBubble } from './MessageBubble';
 
 type ChatWindowProps = {
   messages: ChatMessage[];

@@ -36,17 +36,10 @@ export function RentContractForm({ disabled, onCreate }: RentContractFormProps) 
       <input disabled={disabled} onChange={(event) => setObjectName(event.target.value)} placeholder="Объект" value={objectName} />
       <input disabled={disabled} onChange={(event) => setTenantName(event.target.value)} placeholder="Арендатор" value={tenantName} />
       <div className="rent-form__row">
-        <input disabled={disabled} onChange={(event) => setStartsAt(event.target.value)} type="date" value={startsAt} />
-        <input disabled={disabled} onChange={(event) => setEndsAt(event.target.value)} type="date" value={endsAt} />
+        <input aria-label="Дата начала" disabled={disabled} onChange={(event) => setStartsAt(event.target.value)} type="date" value={startsAt} />
+        <input aria-label="Дата окончания" disabled={disabled} onChange={(event) => setEndsAt(event.target.value)} type="date" value={endsAt} />
       </div>
-      <input
-        disabled={disabled}
-        min="0"
-        onChange={(event) => setMonthlyAmount(event.target.value)}
-        placeholder="Сумма в месяц"
-        type="number"
-        value={monthlyAmount}
-      />
+      <input disabled={disabled} min="0" onChange={(event) => setMonthlyAmount(event.target.value)} placeholder="Сумма в месяц" type="number" value={monthlyAmount} />
       <button disabled={disabled || !objectName.trim() || !tenantName.trim() || !startsAt || !endsAt || !monthlyAmount} type="submit">
         Добавить договор
       </button>

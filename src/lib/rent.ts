@@ -52,59 +52,6 @@ export type RentNoteRow = {
   created_at: string;
 };
 
-export const sampleRentContracts: RentContract[] = [
-  {
-    endsAt: '2026-11-30',
-    id: 'sample-contract-1',
-    isActive: true,
-    monthlyAmount: 280000,
-    objectName: 'Квартира на Абая',
-    startsAt: '2026-06-01',
-    tenantName: 'Айдана',
-  },
-  {
-    endsAt: '2027-02-15',
-    id: 'sample-contract-2',
-    isActive: true,
-    monthlyAmount: 420000,
-    objectName: 'Офис в центре',
-    startsAt: '2026-08-15',
-    tenantName: 'ТОО Orion',
-  },
-];
-
-export const sampleRentPayments: RentPayment[] = [
-  {
-    amount: 280000,
-    dueAt: '2026-08-20',
-    id: 'sample-payment-1',
-    isPaid: false,
-    objectName: 'Квартира на Абая',
-  },
-  {
-    amount: 420000,
-    dueAt: '2026-09-01',
-    id: 'sample-payment-2',
-    isPaid: false,
-    objectName: 'Офис в центре',
-  },
-];
-
-export const sampleRentNotes: RentNote[] = [
-  {
-    createdAt: '2026-08-10T09:00:00.000Z',
-    id: 'sample-note-1',
-    objectName: 'Квартира на Абая',
-    text: 'Проверить счётчики воды перед следующей оплатой.',
-  },
-  {
-    createdAt: '2026-08-11T12:00:00.000Z',
-    id: 'sample-note-2',
-    objectName: 'Офис в центре',
-    text: 'Уточнить у арендатора дату продления договора.',
-  },
-];
-
 export function mapRentContract(row: RentContractRow): RentContract {
   return {
     endsAt: row.ends_at,
@@ -136,7 +83,7 @@ export function mapRentNote(row: RentNoteRow): RentNote {
   };
 }
 
-export async function loadRentContracts() {
+export function loadRentContracts() {
   return supabase
     .from('rent_contracts')
     .select('id, object_name, tenant_name, starts_at, ends_at, monthly_amount, is_active, created_at')
@@ -150,7 +97,7 @@ export async function createRentContract(
   endsAt: string,
   monthlyAmount: number,
 ) {
-  return supabase.from('rent_contracts').insert({
+  return await supabase.from('rent_contracts').insert({
     ends_at: endsAt,
     monthly_amount: monthlyAmount,
     object_name: objectName,
@@ -159,7 +106,7 @@ export async function createRentContract(
   });
 }
 
-export async function loadRentPayments() {
+export function loadRentPayments() {
   return supabase
     .from('rent_payments')
     .select('id, object_name, due_at, amount, is_paid, created_at')
@@ -167,14 +114,14 @@ export async function loadRentPayments() {
 }
 
 export async function createRentPayment(objectName: string, dueAt: string, amount: number) {
-  return supabase.from('rent_payments').insert({
+  return await supabase.from('rent_payments').insert({
     amount,
     due_at: dueAt,
     object_name: objectName,
   });
 }
 
-export async function loadRentNotes() {
+export function loadRentNotes() {
   return supabase
     .from('rent_notes')
     .select('id, object_name, text, created_at')
@@ -182,10 +129,41 @@ export async function loadRentNotes() {
 }
 
 export async function createRentNote(objectName: string, text: string) {
-  return supabase.from('rent_notes').insert({
+  return await supabase.from('rent_notes').insert({
     object_name: objectName,
     text,
   });
+}
+
+export async function seedDemoRent() {
+  await clearDemoRent();
+
+  const [contracts, payments, notes] = await Promise.all([
+    supabase.from('rent_contracts').insert([
+      { ends_at: '2026-11-30', is_demo: true, monthly_amount: 280000, object_name: 'Квартира на Абая', starts_at: '2026-06-01', tenant_name: 'Айдана' },
+      { ends_at: '2027-02-15', is_demo: true, monthly_amount: 420000, object_name: 'Офис в центре', starts_at: '2026-08-15', tenant_name: 'TOO Orion' },
+    ]),
+    supabase.from('rent_payments').insert([
+      { amount: 280000, due_at: '2026-08-20', is_demo: true, object_name: 'Квартира на Абая' },
+      { amount: 420000, due_at: '2026-09-01', is_demo: true, object_name: 'Офис в центре' },
+    ]),
+    supabase.from('rent_notes').insert([
+      { is_demo: true, object_name: 'Квартира на Абая', text: 'Проверить счётчики воды перед оплатой.' },
+      { is_demo: true, object_name: 'Офис в центре', text: 'Уточнить дату продления договора.' },
+    ]),
+  ]);
+
+  return { error: contracts.error ?? payments.error ?? notes.error };
+}
+
+export async function clearDemoRent() {
+  const [contracts, payments, notes] = await Promise.all([
+    supabase.from('rent_contracts').delete().eq('is_demo', true),
+    supabase.from('rent_payments').delete().eq('is_demo', true),
+    supabase.from('rent_notes').delete().eq('is_demo', true),
+  ]);
+
+  return { error: contracts.error ?? payments.error ?? notes.error };
 }
 
 export function formatRentDate(value: string) {

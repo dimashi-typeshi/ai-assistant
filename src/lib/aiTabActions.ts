@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { invokeAi } from './aiFunction';
 import { createRentContract, createRentNote, createRentPayment } from './rent';
 import { createRequest } from './requests';
 
@@ -100,19 +100,21 @@ function normalizeAction(value: unknown): AiTabAction | null {
 }
 
 export async function suggestTabActions(prompt: string) {
-  const { data, error } = await supabase.functions.invoke<AiActionResponse>('ai', {
-    body: { prompt, system: actionSystemPrompt },
-  });
+  let data: AiActionResponse | null;
+  try {
+    data = await invokeAi<AiActionResponse>({ prompt, system: actionSystemPrompt });
+  } catch {
+    return [];
+  }
 
-  if (error || data?.error) return [];
   const rawActions = data?.actions ?? parseActions(data?.text);
   return rawActions.map(normalizeAction).filter((action): action is AiTabAction => action !== null);
 }
 
 function parseActions(text = '') {
   try {
-    const cleanText = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(cleanText) as { actions?: unknown[] };
+    const cleanValue = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleanValue) as { actions?: unknown[] };
     return Array.isArray(parsed.actions) ? parsed.actions : [];
   } catch {
     return [];
@@ -137,14 +139,24 @@ export async function applyTabAction(action: AiTabAction) {
 
 export async function applySuggestedTabActions(prompt: string) {
   const actions = await suggestTabActions(prompt);
-  if (actions.length === 0) return { appliedCount: 0, error: '' };
+  if (actions.length === 0) return { appliedCount: 0, error: '', href: '', label: '' };
 
   const results = await Promise.all(actions.map(applyTabAction));
   const failed = results.find((result) => result.error);
+  const firstAction = actions[0];
   return {
     appliedCount: failed?.error ? 0 : actions.length,
     error: failed?.error?.message ?? '',
+    href: failed?.error ? '' : getActionHref(firstAction),
+    label: failed?.error ? '' : `Открыть: ${getActionTitle(firstAction)}`,
   };
+}
+
+function getActionHref(action: AiTabAction) {
+  if (action.type === 'rent_contract') return '/rent/contracts';
+  if (action.type === 'rent_payment') return '/rent/payments';
+  if (action.type === 'rent_note') return '/rent/notes';
+  return '/requests';
 }
 
 export function getActionTitle(action: AiTabAction) {

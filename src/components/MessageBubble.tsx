@@ -1,8 +1,12 @@
+import { Link } from 'wouter';
+
 export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
   imageUrl?: string;
+  actionHref?: string;
+  actionLabel?: string;
 };
 
 type MessageBubbleProps = {
@@ -23,6 +27,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         <span>{label}</span>
         {message.imageUrl && <img className="message-image" alt="Прикреплённое фото" src={message.imageUrl} />}
         <p>{message.text}</p>
+        {message.actionHref && message.actionLabel && <Link className="message-action-link" href={message.actionHref}>{message.actionLabel}</Link>}
       </div>
     </article>
   );

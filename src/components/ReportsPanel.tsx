@@ -2,6 +2,17 @@ import { useState } from 'react';
 import { ReportOutput } from './ReportOutput';
 import { askBusinessAssistant } from '../lib/ai';
 import {
+  loadPaymentOperations,
+  loadPaymentReminders,
+  loadPendingPayments,
+  mapPaymentOperation,
+  mapPaymentReminder,
+  mapPendingPayment,
+  PaymentOperationRow,
+  PaymentReminderRow,
+  PendingPaymentRow,
+} from '../lib/payments';
+import {
   loadRentContracts,
   loadRentNotes,
   loadRentPayments,
@@ -72,9 +83,22 @@ async function collectReportData(selected: SourceId[]) {
   }
 
   if (selected.includes('payments')) {
-    const { data, error } = await loadRentPayments();
-    if (error) throw new Error(error.message);
-    chunks.push(`Платежи:\n${JSON.stringify(((data ?? []) as RentPaymentRow[]).map(mapRentPayment), null, 2)}`);
+    const [rentResult, operationsResult, pendingResult, remindersResult] = await Promise.all([
+      loadRentPayments(),
+      loadPaymentOperations(),
+      loadPendingPayments(),
+      loadPaymentReminders(),
+    ]);
+    if (rentResult.error) throw new Error(rentResult.error.message);
+    if (operationsResult.error) throw new Error(operationsResult.error.message);
+    if (pendingResult.error) throw new Error(pendingResult.error.message);
+    if (remindersResult.error) throw new Error(remindersResult.error.message);
+    chunks.push(`Платежи:\n${JSON.stringify({
+      operations: ((operationsResult.data ?? []) as PaymentOperationRow[]).map(mapPaymentOperation),
+      pending: ((pendingResult.data ?? []) as PendingPaymentRow[]).map(mapPendingPayment),
+      reminders: ((remindersResult.data ?? []) as PaymentReminderRow[]).map(mapPaymentReminder),
+      rent: ((rentResult.data ?? []) as RentPaymentRow[]).map(mapRentPayment),
+    }, null, 2)}`);
   }
 
   if (selected.includes('notes')) {

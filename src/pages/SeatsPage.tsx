@@ -1,5 +1,6 @@
 import { ClipboardEvent, ChangeEvent, PointerEvent, useEffect, useRef, useState } from 'react';
 import { EmptyState } from '../components/EmptyState';
+import { DemoActions } from '../components/DemoActions';
 import { SectionHeader } from '../components/SectionHeader';
 import { readPhotoAsDataUrl, splitDataUrl } from '../lib/photos';
 import { analyzeSeatScheme, SeatMarker, SeatSchemeDesign } from '../lib/seatsAi';
@@ -17,6 +18,7 @@ type Scheme = {
 
 const schemesKey = 'seatSchemes';
 const indexKey = 'seatSchemesActiveIndex';
+const demoSchemeId = 'demo-seat-scheme';
 
 function loadSchemes() {
   try {
@@ -29,6 +31,21 @@ function loadSchemes() {
 
 function getMarkerIcon(marker: SeatMarker) {
   return marker.kind === 'bunk' ? 'II' : marker.state === 'free' ? '+' : '-';
+}
+
+function createDemoScheme(): Scheme {
+  return {
+    accent: 'green',
+    analysis: 'Пример: 4 места свободны, 2 заняты. Маркеры можно двигать, переключать и менять цену.',
+    id: demoSchemeId,
+    imageUrl: '',
+    markers: [
+      { bottom: { price: '120 000 ₸', state: 'free' }, id: 'demo-seat-1', kind: 'bed', label: 'A1', price: '120 000 ₸', state: 'free', top: { price: '120 000 ₸', state: 'free' }, x: 20, y: 30 },
+      { bottom: { price: '100 000 ₸', state: 'busy' }, id: 'demo-seat-2', kind: 'bunk', label: 'B1', price: '100 000 ₸', state: 'free', top: { price: '120 000 ₸', state: 'free' }, x: 48, y: 35 },
+      { bottom: { price: '110 000 ₸', state: 'busy' }, id: 'demo-seat-3', kind: 'bed', label: 'C1', price: '110 000 ₸', state: 'busy', top: { price: '110 000 ₸', state: 'busy' }, x: 72, y: 62 },
+    ],
+    name: 'Пример комнаты',
+  };
 }
 
 export function SeatsPage() {
@@ -225,6 +242,22 @@ export function SeatsPage() {
     });
   }
 
+  function seedDemo() {
+    setSchemes((current) => {
+      const nextSchemes = [createDemoScheme(), ...current.filter((scheme) => scheme.id !== demoSchemeId)];
+      setActiveIndex(0);
+      return nextSchemes;
+    });
+  }
+
+  function clearDemo() {
+    setSchemes((current) => {
+      const nextSchemes = current.filter((scheme) => scheme.id !== demoSchemeId);
+      setActiveIndex(0);
+      return nextSchemes;
+    });
+  }
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     for (const file of files) await analyzeScheme(file);
@@ -242,6 +275,7 @@ export function SeatsPage() {
     <main className="mobile-app-shell">
       <section className="section-page seats-page">
         <SectionHeader subtitle="Схемы сохраняются после перезапуска, а ИИ отмечает свободные, занятые и двухъярусные кровати." title="Свободные места" />
+        <DemoActions disabled={isAnalyzing} onClear={clearDemo} onSeed={seedDemo} />
         <section className="seats-uploader" onPaste={handlePaste} tabIndex={0}>
           <div>
             <strong>Фото схемы</strong>
@@ -276,7 +310,7 @@ export function SeatsPage() {
           </div>
           {activeScheme ? (
             <div className="scheme-image-wrap">
-              <img alt={activeScheme.name} src={activeScheme.imageUrl} />
+              {activeScheme.imageUrl ? <img alt={activeScheme.name} src={activeScheme.imageUrl} /> : <div className="scheme-demo-room" aria-hidden="true"><span /><span /><span /><span /></div>}
               <div className="scheme-marker-layer" aria-label="Кликабельные кровати" ref={layerRef}>
                 {activeScheme.markers.map((marker) => (
                   <button

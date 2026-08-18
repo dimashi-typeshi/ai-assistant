@@ -1,4 +1,4 @@
-import { ChangeEvent, ClipboardEvent, FormEvent } from 'react';
+import { ChangeEvent, ClipboardEvent, FormEvent, KeyboardEvent } from 'react';
 
 type ChatInputProps = {
   value: string;
@@ -15,6 +15,12 @@ export function ChatInput({ value, imageName, isLoading, onChange, onImageChange
     onSubmit();
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== 'Enter' || event.shiftKey) return;
+    event.preventDefault();
+    onSubmit();
+  }
+
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     onImageChange(event.target.files?.[0] ?? null);
   }
@@ -22,7 +28,6 @@ export function ChatInput({ value, imageName, isLoading, onChange, onImageChange
   function handlePaste(event: ClipboardEvent<HTMLFormElement>) {
     const file = Array.from(event.clipboardData.files).find((item) => item.type.startsWith('image/'));
     if (!file) return;
-
     event.preventDefault();
     onImageChange(file);
   }
@@ -34,7 +39,8 @@ export function ChatInput({ value, imageName, isLoading, onChange, onImageChange
           aria-label="Задача для AI-ассистента"
           disabled={isLoading}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Например: ответь в роли администратора, дай совет по данным или проанализируй фото"
+          onKeyDown={handleKeyDown}
+          placeholder="Например: ответь клиенту, дай совет по данным или проанализируй фото"
           rows={2}
           value={value}
         />

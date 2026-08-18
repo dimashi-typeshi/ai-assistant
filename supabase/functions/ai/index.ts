@@ -1,13 +1,8 @@
 // AI-функция на бесплатном ключе Google Gemini.
 // Вызов с фронта: supabase.functions.invoke('ai', { body: { prompt, system } })
-//
-// Запуск (один раз):
-//   1) Добавь GEMINI_API_KEY в локальный .env
-//   2) Загрузи секрет:  npm run ai:secret
-//   3) Задеплой:        npm run ai:deploy
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-const MODEL = 'gemini-3.5-flash';
+const MODELS = ['gemini-3.5-flash', 'gemini-3.5-flash-lite'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +11,7 @@ const cors = {
 };
 
 type GeminiResponse = {
+  error?: { message?: unknown };
   candidates?: Array<{
     content?: {
       parts?: Array<{ text?: unknown }>;
@@ -28,11 +24,43 @@ type ImageInput = {
   mimeType?: unknown;
 };
 
+type GeminiPart = { text: string } | { inlineData: { data: string; mimeType: string } };
+
+type GeminiRequestBody = {
+  systemInstruction?: { parts: Array<{ text: string }> };
+  contents: Array<{ parts: GeminiPart[] }>;
+};
+
 function json(body: object, status = 200) {
+  const responseStatus = status !== 405 && 'error' in body ? 200 : status;
+
   return new Response(JSON.stringify(body), {
-    status,
+    status: responseStatus,
     headers: { ...cors, 'Content-Type': 'application/json' },
   });
+}
+
+async function generateContent(requestBody: GeminiRequestBody) {
+  let lastError = '';
+
+  for (const model of MODELS) {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      },
+    );
+
+    const data = (await response.json()) as GeminiResponse;
+    if (response.ok) return data;
+
+    lastError = typeof data.error?.message === 'string' ? data.error.message : `Status ${response.status}`;
+    console.error('Gemini request failed', model, response.status, data);
+  }
+
+  throw new Error(lastError);
 }
 
 Deno.serve(async (req) => {
@@ -42,7 +70,7 @@ Deno.serve(async (req) => {
   try {
     if (!GEMINI_API_KEY) {
       console.error('GEMINI_API_KEY is not configured');
-      return json({ error: 'AI пока не настроен. Попроси наставника проверить секрет.' }, 503);
+      return json({ error: 'AI пока не настроен. Проверь секрет GEMINI_API_KEY.' });
     }
 
     const body = (await req.json()) as { prompt?: unknown; system?: unknown; image?: ImageInput };
@@ -51,43 +79,30 @@ Deno.serve(async (req) => {
     const imageData = typeof body.image?.data === 'string' ? body.image.data : '';
     const imageMimeType = typeof body.image?.mimeType === 'string' ? body.image.mimeType : '';
 
-    if (!prompt) return json({ error: 'Напиши запрос для AI.' }, 400);
+    if (!prompt) return json({ error: 'Напиши запрос для AI.' });
     if (prompt.length > 10_000 || system.length > 5_000) {
-      return json({ error: 'Запрос слишком длинный. Сделай его короче.' }, 400);
+      return json({ error: 'Запрос слишком длинный. Сделай его короче.' });
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: system ? { parts: [{ text: system }] } : undefined,
-          contents: [{
-            parts: [
-              { text: prompt },
-              ...(imageData && imageMimeType ? [{ inlineData: { data: imageData, mimeType: imageMimeType } }] : []),
-            ],
-          }],
-        }),
-      },
-    );
-
-    const data = (await response.json()) as GeminiResponse;
-    if (!response.ok) {
-      console.error('Gemini request failed', response.status, data);
-      return json({ error: 'AI сейчас не ответил. Попробуй ещё раз чуть позже.' }, 502);
-    }
+    const data = await generateContent({
+      systemInstruction: system ? { parts: [{ text: system }] } : undefined,
+      contents: [{
+        parts: [
+          { text: prompt },
+          ...(imageData && imageMimeType ? [{ inlineData: { data: imageData, mimeType: imageMimeType } }] : []),
+        ],
+      }],
+    });
 
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (typeof text !== 'string' || !text.trim()) {
       console.error('Gemini returned an empty response', data);
-      return json({ error: 'AI вернул пустой ответ. Попробуй переформулировать запрос.' }, 502);
+      return json({ error: 'AI вернул пустой ответ. Попробуй переформулировать запрос.' });
     }
 
     return json({ text });
   } catch (error) {
     console.error('AI function failed', error);
-    return json({ error: 'Не получилось обратиться к AI. Попробуй ещё раз.' }, 500);
+    return json({ error: 'AI сейчас не ответил. Попробуй еще раз чуть позже.' });
   }
 });

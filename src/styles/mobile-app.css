@@ -10,6 +10,54 @@
   overflow-x: hidden;
 }
 
+.home-onboarding {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.home-onboarding div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.home-onboarding span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.home-onboarding strong {
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.home-onboarding p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.home-onboarding a {
+  width: fit-content;
+  color: #cfe0ff;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .home-onboarding {
+    grid-template-columns: 1fr;
+  }
+}
+
 .mobile-app-shell:not(.home-dashboard-shell)::before,
 .mobile-app-shell:not(.home-dashboard-shell)::after {
   position: fixed;

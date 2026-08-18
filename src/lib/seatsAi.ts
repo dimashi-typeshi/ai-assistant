@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
 import { AiImageInput } from './ai';
+import { invokeAi } from './aiFunction';
 
 export type BedLevel = {
   state: 'free' | 'busy';
@@ -135,11 +135,6 @@ export async function analyzeSeatScheme(image: AiImageInput) {
     'Для двухъярусных кроватей отдельно укажи верхний и нижний ярус.',
   ].join(' ');
 
-  const { data, error } = await supabase.functions.invoke<SeatSchemeResponse>('ai', {
-    body: { image, prompt, system: systemPrompt },
-  });
-
-  if (error) throw new Error(error.message);
-  if (data?.error) throw new Error(data.error);
+  const data = await invokeAi<SeatSchemeResponse>({ image, prompt, system: systemPrompt });
   return data?.text ? parseDesign(data.text) : normalizeDesign(data ?? {});
 }
