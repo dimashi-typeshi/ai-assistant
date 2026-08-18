@@ -11,6 +11,7 @@ import './styles/rent.css';
 import './styles/requests.css';
 import './styles/requests-calendar.css';
 import './styles/seats.css';
+import './styles/light-theme.css';
 
 if (localStorage.getItem('hideBackgroundShapes') === 'true') {
   document.body.classList.add('hide-background-shapes');

@@ -103,6 +103,41 @@ textarea,
     transform 240ms ease;
 }
 
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(79, 140, 255, 0.08);
+  color: var(--muted);
+}
+
+.loading-state span {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(79, 140, 255, 0.22);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: loading-state-spin 820ms linear infinite;
+}
+
+.loading-state p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+@keyframes loading-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .auth-toast {
   position: fixed;
   left: 50%;

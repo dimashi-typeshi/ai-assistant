@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Auth } from '../components/Auth';
 import { DemoActions } from '../components/DemoActions';
 import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
 import { RequestCard } from '../components/RequestCard';
 import { RequestForm } from '../components/RequestForm';
 import { RequestsCalendar } from '../components/RequestsCalendar';
@@ -10,6 +11,7 @@ import { SectionHeader } from '../components/SectionHeader';
 import { TelegramImportForm } from '../components/TelegramImportForm';
 import { RequestItem, RequestStatus, clearDemoRequests, createNote, createRequest, deleteRequest, loadRequests, seedDemoRequests, updateRequest } from '../lib/requests';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 function todayKey() {
   const today = new Date();
@@ -35,7 +37,7 @@ export function RequestsPage() {
 
   async function refresh() {
     const { data, error } = await loadRequests();
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else setRequests((data ?? []) as RequestItem[]);
   }
 
@@ -53,7 +55,7 @@ export function RequestsPage() {
     setIsBusy(true);
     setError('');
     const result = await action();
-    if (result.error) setError(result.error.message);
+    if (result.error) setError(friendlyError(result.error.message));
     else await refresh();
     setIsBusy(false);
   }
@@ -67,7 +69,7 @@ export function RequestsPage() {
     setError('');
     const { data, error } = await createRequest(title, deadlineAt, labelColor);
     const createdId = data?.id;
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else if (createdId && details) await createNote(createdId, `Импортировано из Telegram:\n${details}`);
     await refresh();
     setIsBusy(false);
@@ -87,6 +89,7 @@ export function RequestsPage() {
       <section className="section-page requests-page">
         <SectionHeader subtitle="Импортируй заявки из Telegram, ставь дедлайны и отмечай цветом." title="Заявки" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
+        {isSupabaseConfigured && !isReady && <LoadingState text="Проверяем вход и загружаем заявки..." />}
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth />}
         {isSignedIn && (
           <>

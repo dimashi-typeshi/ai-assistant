@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { Auth } from '../components/Auth';
+import { LoadingState } from '../components/LoadingState';
 import { ProfileActions } from '../components/ProfileActions';
 import { ProfileEditor } from '../components/ProfileEditor';
 import { ProfileHeader } from '../components/ProfileHeader';
 import { SectionHeader } from '../components/SectionHeader';
 import { ProfileData, loadProfile, sendPasswordReset, signOut, updateEmail, updateProfile } from '../lib/profile';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 const emptyProfile: ProfileData = { name: '', phone: '', avatarUrl: '' };
 
@@ -48,12 +50,12 @@ export function ProfilePage() {
     setMessage('');
     const profileResult = await updateProfile(profile);
     if (profileResult.error) {
-      setMessage(profileResult.error.message);
+      setMessage(friendlyError(profileResult.error.message));
       return;
     }
     if (email !== savedEmail) {
       const emailResult = await updateEmail(email);
-      if (emailResult.error) setMessage(emailResult.error.message);
+      if (emailResult.error) setMessage(friendlyError(emailResult.error.message));
       else setMessage('Проверь почту: Supabase отправил письмо для подтверждения нового email.');
     } else {
       setMessage('Профиль сохранён.');
@@ -64,7 +66,7 @@ export function ProfilePage() {
 
   async function resetPassword() {
     const result = await sendPasswordReset(savedEmail);
-    setMessage(result.error ? result.error.message : 'Письмо для смены пароля отправлено.');
+    setMessage(result.error ? friendlyError(result.error.message) : 'Письмо для смены пароля отправлено.');
   }
 
   async function leave() {
@@ -82,6 +84,7 @@ export function ProfilePage() {
       <section className="section-page profile-page">
         <SectionHeader subtitle="Минималистичный профиль с аватаром, данными аккаунта и действиями." title="Профиль" />
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
+        {isSupabaseConfigured && !isReady && <LoadingState text="Проверяем профиль..." />}
         {isSupabaseConfigured && isReady && !savedEmail && <Auth onAuthenticated={refresh} />}
         {savedEmail && (
           <>

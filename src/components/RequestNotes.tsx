@@ -1,16 +1,21 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { RequestNote, createNote, deleteNote, loadNotes, updateNote } from '../lib/requests';
+import { friendlyError } from '../lib/uiMessages';
+import { LoadingState } from './LoadingState';
 
 export function RequestNotes({ requestId }: { requestId: string }) {
   const [notes, setNotes] = useState<RequestNote[]>([]);
   const [text, setText] = useState('');
   const [editingId, setEditingId] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   async function refresh() {
+    setIsLoading(true);
     const { data, error } = await loadNotes(requestId);
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else setNotes((data ?? []) as RequestNote[]);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -21,7 +26,7 @@ export function RequestNotes({ requestId }: { requestId: string }) {
     event.preventDefault();
     if (!text.trim()) return;
     const result = editingId ? await updateNote(editingId, text.trim()) : await createNote(requestId, text.trim());
-    if (result.error) setError(result.error.message);
+    if (result.error) setError(friendlyError(result.error.message));
     else {
       setText('');
       setEditingId('');
@@ -36,6 +41,7 @@ export function RequestNotes({ requestId }: { requestId: string }) {
         <button disabled={!text.trim()} type="submit">{editingId ? 'Сохранить' : 'Добавить'}</button>
       </form>
       {error && <p className="alert">{error}</p>}
+      {isLoading && <LoadingState text="Загружаем заметки..." />}
       {notes.map((note) => (
         <article className="note-card" key={note.id}>
           <p>{note.text}</p>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
+import { LoadingState } from './LoadingState';
 import { SupabaseSetupMessage } from './SupabaseSetupMessage';
 
 // Пример работы с базой: читаем, добавляем и удаляем свои записи.
@@ -15,14 +17,17 @@ export function Entries({ userEmail }: { userEmail: string }) {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   async function load() {
+    setIsLoading(true);
     const { data, error } = await supabase
       .from('entries')
       .select('id, title, created_at')
       .order('created_at', { ascending: false });
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else setEntries(data ?? []);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export function Entries({ userEmail }: { userEmail: string }) {
     e.preventDefault();
     if (!title.trim()) return;
     const { error } = await supabase.from('entries').insert({ title: title.trim() });
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else {
       setTitle('');
       load();
@@ -44,7 +49,7 @@ export function Entries({ userEmail }: { userEmail: string }) {
 
   async function remove(id: string) {
     const { error } = await supabase.from('entries').delete().eq('id', id);
-    if (error) setError(error.message);
+    if (error) setError(friendlyError(error.message));
     else load();
   }
 
@@ -63,8 +68,9 @@ export function Entries({ userEmail }: { userEmail: string }) {
       </form>
 
       {error && <p className="message">{error}</p>}
+      {isLoading && <LoadingState text="Загружаем записи..." />}
 
-      {entries.length === 0 ? (
+      {!isLoading && entries.length === 0 ? (
         <p className="empty">Пока пусто. Добавь первую запись 👆</p>
       ) : (
         <ul className="list">

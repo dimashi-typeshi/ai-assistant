@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Auth } from '../components/Auth';
 import { DemoActions } from '../components/DemoActions';
+import { LoadingState } from '../components/LoadingState';
 import { RentContractsPanel } from '../components/RentContractsPanel';
 import { RentNotesPanel } from '../components/RentNotesPanel';
 import { RentOverviewCard } from '../components/RentOverviewCard';
@@ -29,6 +30,7 @@ import {
   seedDemoRent,
 } from '../lib/rent';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 function getContractsSummary(contracts: RentContract[]) {
   const active = contracts.filter((contract) => contract.isActive);
@@ -87,11 +89,11 @@ export function RentPage() {
       loadRentNotes(),
     ]);
 
-    if (contractsResult.error) setError(contractsResult.error.message);
+    if (contractsResult.error) setError(friendlyError(contractsResult.error.message));
     else setContracts(((contractsResult.data ?? []) as RentContractRow[]).map(mapRentContract));
-    if (paymentsResult.error) setError(paymentsResult.error.message);
+    if (paymentsResult.error) setError(friendlyError(paymentsResult.error.message));
     else setPayments(((paymentsResult.data ?? []) as RentPaymentRow[]).map(mapRentPayment));
-    if (notesResult.error) setError(notesResult.error.message);
+    if (notesResult.error) setError(friendlyError(notesResult.error.message));
     else setNotes(((notesResult.data ?? []) as RentNoteRow[]).map(mapRentNote));
   }
 
@@ -109,7 +111,7 @@ export function RentPage() {
     setIsBusy(true);
     setError('');
     const result = await action();
-    if (result.error) setError(result.error.message);
+    if (result.error) setError(friendlyError(result.error.message));
     else await refreshRentData();
     setIsBusy(false);
   }
@@ -138,6 +140,7 @@ export function RentPage() {
           {isSubpage && <Link className="rent-home-link" href="/rent">Главная</Link>}
         </div>
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
+        {isSupabaseConfigured && !isReady && <LoadingState text="Проверяем вход и загружаем аренду..." />}
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth onAuthenticated={async () => { setIsSignedIn(true); await refreshRentData(); }} />}
         {isSignedIn && (
           <>

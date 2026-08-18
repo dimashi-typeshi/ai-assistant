@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 import { SupabaseSetupMessage } from './SupabaseSetupMessage';
 
 type AuthProps = {
@@ -36,7 +37,7 @@ export function Auth({ onAuthenticated }: AuthProps) {
       const { data, error } = await request;
 
       if (error) {
-        setMessage(error.message);
+        setMessage(friendlyError(error.message));
         return;
       }
 
@@ -66,7 +67,7 @@ export function Auth({ onAuthenticated }: AuthProps) {
     });
 
     if (error) {
-      setMessage(error.message);
+      setMessage(friendlyError(error.message));
       setGoogleBusy(false);
     }
   }

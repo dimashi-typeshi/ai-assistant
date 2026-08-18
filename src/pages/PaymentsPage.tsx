@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Auth } from '../components/Auth';
 import { DemoActions } from '../components/DemoActions';
 import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
 import { PaymentForm } from '../components/PaymentForm';
 import { PaymentsOverview } from '../components/PaymentsOverview';
 import { PhotoUpload } from '../components/PhotoUpload';
@@ -29,6 +30,7 @@ import {
   seedDemoPayments,
 } from '../lib/payments';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 export function PaymentsPage() {
   const [location] = useLocation();
@@ -47,11 +49,11 @@ export function PaymentsPage() {
       loadPendingPayments(),
       loadPaymentReminders(),
     ]);
-    if (operationsResult.error) setError(operationsResult.error.message);
+    if (operationsResult.error) setError(friendlyError(operationsResult.error.message));
     else setOperations(((operationsResult.data ?? []) as PaymentOperationRow[]).map(mapPaymentOperation));
-    if (pendingResult.error) setError(pendingResult.error.message);
+    if (pendingResult.error) setError(friendlyError(pendingResult.error.message));
     else setPending(((pendingResult.data ?? []) as PendingPaymentRow[]).map(mapPendingPayment));
-    if (remindersResult.error) setError(remindersResult.error.message);
+    if (remindersResult.error) setError(friendlyError(remindersResult.error.message));
     else setReminders(((remindersResult.data ?? []) as PaymentReminderRow[]).map(mapPaymentReminder));
   }
 
@@ -69,7 +71,7 @@ export function PaymentsPage() {
     setIsBusy(true);
     setError('');
     const result = await action();
-    if (result.error) setError(result.error.message);
+    if (result.error) setError(friendlyError(result.error.message));
     else await refresh();
     setIsBusy(false);
   }
@@ -109,6 +111,7 @@ export function PaymentsPage() {
           {isSubpage && <Link className="rent-home-link" href="/payments">Назад</Link>}
         </div>
         {!isSupabaseConfigured && <p className="alert">Добавь Supabase URL и ключ в .env.</p>}
+        {isSupabaseConfigured && !isReady && <LoadingState text="Проверяем вход и загружаем платежи..." />}
         {isSupabaseConfigured && isReady && !isSignedIn && <Auth onAuthenticated={async () => { setIsSignedIn(true); await refresh(); }} />}
         {isSignedIn && (
           <>

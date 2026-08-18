@@ -1,0 +1,173 @@
+body.light-theme {
+  --bg: #f4f7f6;
+  --bg-soft: #eef3f1;
+  --panel: #ffffff;
+  --panel-elevated: #f8fbfa;
+  --ink: #111816;
+  --muted: #4f5f5a;
+  --muted-soft: #697873;
+  --line: rgba(17, 24, 22, 0.12);
+  --line-strong: rgba(17, 24, 22, 0.2);
+  --assistant: #ffffff;
+  --user: #dbeafe;
+  --danger: #b42318;
+}
+
+body.light-theme,
+body.light-theme .mobile-app-shell,
+body.light-theme .mobile-home,
+body.light-theme .section-page {
+  background: #f4f7f6;
+  color: var(--ink);
+}
+
+body.light-theme .home-topbar,
+body.light-theme .home-rail,
+body.light-theme .home-footer,
+body.light-theme .assistant-panel,
+body.light-theme .floating-ai-window,
+body.light-theme .reports-panel,
+body.light-theme .rent-card,
+body.light-theme .settings-card,
+body.light-theme .app-tile,
+body.light-theme .request-card,
+body.light-theme .calendar-panel,
+body.light-theme .seats-card,
+body.light-theme .profile-card,
+body.light-theme .home-ad-card {
+  background: #ffffff;
+  border-color: var(--line);
+  color: var(--ink);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .home-rail {
+  border-right-color: rgba(17, 24, 22, 0.14);
+}
+
+body.light-theme .home-rail--open,
+body.light-theme .home-rail--open:hover,
+body.light-theme .home-rail--open:focus-within,
+body.light-theme .home-rail--open:has(.reviews-rail--open) {
+  box-shadow: 20px 0 38px rgba(15, 23, 42, 0.14);
+}
+
+body.light-theme .home-rail-link {
+  color: #53645f;
+}
+
+body.light-theme .home-rail-link:hover {
+  background: #edf5f1;
+  border-color: rgba(4, 120, 87, 0.2);
+  color: #111816;
+}
+
+body.light-theme .home-rail-link--active {
+  background: #dcfce7;
+  border-color: rgba(4, 120, 87, 0.32);
+  color: #064e3b;
+}
+
+body.light-theme .home-rail-link span,
+body.light-theme .reviews-rail__mark,
+body.light-theme .app-tile span,
+body.light-theme .home-ai-mark,
+body.light-theme .home-profile-link span {
+  background: #e6f7ee;
+  border-color: rgba(4, 120, 87, 0.24);
+  color: #047857;
+}
+
+body.light-theme .home-rail-link strong,
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme strong,
+body.light-theme b,
+body.light-theme label {
+  color: var(--ink);
+}
+
+body.light-theme p,
+body.light-theme small,
+body.light-theme .app-tile__text,
+body.light-theme .section-header p,
+body.light-theme .home-crumbs,
+body.light-theme .reviews-rail__message,
+body.light-theme .reviews-rail__list p,
+body.light-theme .settings-checks,
+body.light-theme .empty-state {
+  color: var(--muted);
+}
+
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select,
+body.light-theme .home-search,
+body.light-theme .home-search input,
+body.light-theme .reviews-rail input,
+body.light-theme .reviews-rail textarea,
+body.light-theme .settings-theme,
+body.light-theme .settings-language,
+body.light-theme .settings-link,
+body.light-theme .settings-actions a,
+body.light-theme .calendar-nav button,
+body.light-theme .request-card select,
+body.light-theme .request-card input,
+body.light-theme .rent-card input,
+body.light-theme .rent-card textarea,
+body.light-theme .profile-card input,
+body.light-theme .profile-card textarea {
+  background: #f8fbfa;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: #72807c;
+}
+
+body.light-theme .home-search-suggestion,
+body.light-theme .home-promo__secondary,
+body.light-theme .start-button,
+body.light-theme .request-secondary-button {
+  color: #0f766e;
+}
+
+body.light-theme .home-search-suggestions,
+body.light-theme .home-search-suggestion,
+body.light-theme .reviews-rail__list article,
+body.light-theme .ad-login-grid span,
+body.light-theme .home-ad-card code,
+body.light-theme .reports-bar,
+body.light-theme .reports-advice,
+body.light-theme .calendar-day,
+body.light-theme .rent-payment-row {
+  background: #f8fbfa;
+  border-color: var(--line);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+body.light-theme .home-search-suggestion:hover,
+body.light-theme .reviews-rail__list article:hover,
+body.light-theme .app-tile:hover {
+  background: #eef7f3;
+  border-color: rgba(4, 120, 87, 0.24);
+}
+
+body.light-theme .settings-theme--active,
+body.light-theme .settings-language--active,
+body.light-theme .home-promo__primary,
+body.light-theme .reviews-rail button {
+  background: #047857;
+  border-color: #047857;
+  color: #ffffff;
+}
+
+body.light-theme .alert,
+body.light-theme .request-danger-button,
+body.light-theme .deadline-badge--danger {
+  color: #b42318;
+}

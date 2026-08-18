@@ -1,5 +1,6 @@
 import { ChangeEvent, ClipboardEvent, useState } from 'react';
 import { UploadedPhoto, uploadSectionPhoto } from '../lib/photos';
+import { friendlyError } from '../lib/uiMessages';
 
 type PhotoUploadProps = {
   disabled?: boolean;
@@ -21,7 +22,7 @@ export function PhotoUpload({ disabled = false, section, title = 'Фото' }: P
       const uploaded = await uploadSectionPhoto(file, section);
       setPhotos((current) => [uploaded, ...current]);
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'Не получилось загрузить фото.');
+      setError(caughtError instanceof Error ? friendlyError(caughtError.message) : 'Не получилось загрузить фото. Попробуй выбрать файл ещё раз.');
     } finally {
       setIsUploading(false);
     }

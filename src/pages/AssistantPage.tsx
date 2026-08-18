@@ -9,6 +9,7 @@ import { askBusinessAssistant } from '../lib/ai';
 import { applySuggestedTabActions } from '../lib/aiTabActions';
 import { readPhotoAsDataUrl, splitDataUrl } from '../lib/photos';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 const historyKey = 'aiChatHistory';
 
@@ -105,7 +106,7 @@ export function AssistantPage() {
       showAnswerGradually(answer);
 
       const actionResult = await applySuggestedTabActions(prompt);
-      if (actionResult.error) setError(actionResult.error);
+      if (actionResult.error) setError(friendlyError(actionResult.error));
       else if (actionResult.appliedCount > 0) {
         updateMessages([...messagesRef.current, {
           ...createMessage('assistant', `Готово, я обновил записи: ${actionResult.appliedCount}`),
@@ -117,7 +118,7 @@ export function AssistantPage() {
 
       setImageFile(null);
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'Не получилось получить ответ.');
+      setError(caughtError instanceof Error ? friendlyError(caughtError.message) : 'Не получилось получить ответ. Попробуй ещё раз.');
     } finally {
       setIsLoading(false);
     }

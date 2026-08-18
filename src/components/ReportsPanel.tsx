@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LoadingState } from './LoadingState';
 import { ReportOutput } from './ReportOutput';
 import { askBusinessAssistant } from '../lib/ai';
 import {
@@ -25,6 +26,7 @@ import {
 } from '../lib/rent';
 import { loadRequests, RequestItem } from '../lib/requests';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { friendlyError } from '../lib/uiMessages';
 
 type SourceId = 'requests' | 'contracts' | 'payments' | 'notes';
 export type ReportFormat = 'table' | 'list' | 'matrix' | 'bar' | 'pie';
@@ -138,7 +140,7 @@ export function ReportsPanel() {
       ].join('\n\n');
       setReport(parseVisualReport(await askBusinessAssistant(prompt)));
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : 'Не получилось сформировать отчёт.');
+      setError(caughtError instanceof Error ? friendlyError(caughtError.message) : 'Не получилось сформировать отчёт. Попробуй ещё раз.');
     } finally {
       setIsLoading(false);
     }
@@ -179,6 +181,7 @@ export function ReportsPanel() {
       <button className="reports-generate-button" disabled={selected.length === 0 || isLoading} onClick={() => void generateReport()} type="button">
         {isLoading ? 'Генерируется...' : 'Сгенерировать'}
       </button>
+      {isLoading && <LoadingState text="Собираем данные и готовим отчёт..." />}
       {error && <p className="alert">{error}</p>}
       {report && <ReportOutput format={format} report={report} />}
       {report && <button className="reports-download-button" onClick={downloadReport} type="button">Скачать отчёт</button>}
