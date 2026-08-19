@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
+function isAuthCallbackUrl() {
+  const authParams = new URLSearchParams(`${window.location.search}&${window.location.hash.replace(/^#/, '')}`);
+  return authParams.has('code') || authParams.has('access_token') || authParams.has('refresh_token');
+}
+
 export function AuthStateRedirect() {
   const [, navigate] = useLocation();
   const [showSuccess, setShowSuccess] = useState(false);
@@ -10,7 +15,7 @@ export function AuthStateRedirect() {
     if (!isSupabaseConfigured) return;
 
     const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' && isAuthCallbackUrl()) {
         setShowSuccess(true);
         navigate('/dashboard');
       }
