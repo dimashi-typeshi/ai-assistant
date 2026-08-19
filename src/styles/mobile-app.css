@@ -108,30 +108,56 @@
   left: 14px;
   z-index: 35;
   display: grid;
+  grid-template-rows: repeat(3, 2px);
+  gap: 6px;
   width: 42px;
   height: 42px;
+  align-content: center;
   place-items: center;
-  background: #1b1f1d;
-  border: 1px solid rgba(134, 239, 172, 0.26);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    #151817;
+  border: 1px solid rgba(134, 239, 172, 0.3);
   border-radius: 8px;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
 .home-rail-toggle:hover {
-  background: #223028;
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.3), 0 0 20px rgba(134, 239, 172, 0.16);
+  background:
+    linear-gradient(180deg, rgba(134, 239, 172, 0.16), transparent),
+    #1b241f;
+  border-color: rgba(134, 239, 172, 0.52);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.3), 0 0 22px rgba(134, 239, 172, 0.2);
   transform: translateY(-1px);
 }
 
 .home-rail-toggle span {
   display: block;
-  width: 20px;
+  width: 21px;
   height: 2px;
   border-radius: 999px;
-  background: #dbeafe;
-  transition: transform 180ms ease, opacity 180ms ease;
+  background: #e9fff1;
+  box-shadow: 0 0 10px rgba(134, 239, 172, 0.18);
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease, opacity 180ms ease, width 180ms ease;
+}
+
+.home-rail-toggle span:nth-child(2) {
+  width: 16px;
+}
+
+.home-rail-toggle[aria-expanded="true"] {
+  background:
+    linear-gradient(135deg, rgba(134, 239, 172, 0.2), rgba(34, 211, 238, 0.12)),
+    #18231e;
+  border-color: rgba(134, 239, 172, 0.58);
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.32),
+    0 0 26px rgba(134, 239, 172, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .home-rail-toggle[aria-expanded="true"] span:first-child {
@@ -139,6 +165,7 @@
 }
 
 .home-rail-toggle[aria-expanded="true"] span:nth-child(2) {
+  width: 21px;
   opacity: 0;
 }
 

@@ -21,7 +21,13 @@ export function RequestForm({ disabled, onCreate }: RequestFormProps) {
 
   return (
     <form className="request-form" onSubmit={handleSubmit}>
-      <input disabled={disabled} onChange={(event) => setTitle(event.target.value)} placeholder="Название заявки" value={title} />
+      <input
+        className="request-title-input"
+        disabled={disabled}
+        onChange={(event) => setTitle(event.target.value)}
+        placeholder="Название заявки"
+        value={title}
+      />
       <input disabled={disabled} onChange={(event) => setDeadline(event.target.value)} type="datetime-local" value={deadline} />
       <div className="color-picker" aria-label="Цвет заявки">
         {requestLabelColors.map((color) => (
