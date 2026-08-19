@@ -25,6 +25,7 @@ import {
   RentPaymentRow,
 } from '../lib/rent';
 import { loadRequests, RequestItem } from '../lib/requests';
+import { formatReportText, printReportPdf } from '../lib/reportExport';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { friendlyError } from '../lib/uiMessages';
 
@@ -146,14 +147,24 @@ export function ReportsPanel() {
     }
   }
 
-  function downloadReport() {
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'ai-report.json';
-    link.click();
-    URL.revokeObjectURL(url);
+  function downloadReportPdf() {
+    if (!report) return;
+    const isOpened = printReportPdf(report);
+    if (!isOpened) {
+      setError('Браузер заблокировал окно PDF. Разреши всплывающие окна и попробуй еще раз.');
+    }
+  }
+
+  async function shareReport() {
+    if (!report) return;
+    const text = formatReportText(report);
+
+    if (navigator.share) {
+      await navigator.share({ title: report.title, text });
+      return;
+    }
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   }
 
   return (
@@ -184,7 +195,12 @@ export function ReportsPanel() {
       {isLoading && <LoadingState text="Собираем данные и готовим отчёт..." />}
       {error && <p className="alert">{error}</p>}
       {report && <ReportOutput format={format} report={report} />}
-      {report && <button className="reports-download-button" onClick={downloadReport} type="button">Скачать отчёт</button>}
+      {report && (
+        <div className="reports-actions">
+          <button className="reports-download-button" onClick={downloadReportPdf} type="button">Скачать PDF</button>
+          <button className="reports-share-button" onClick={() => void shareReport()} type="button">Отправить</button>
+        </div>
+      )}
     </section>
   );
 }
