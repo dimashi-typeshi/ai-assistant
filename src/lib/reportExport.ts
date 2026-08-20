@@ -10,9 +10,7 @@ function escapeHtml(value: string) {
 }
 
 function buildRows(report: VisualReport) {
-  if (report.rows.length === 0) {
-    return '<p class="muted">В отчете нет строк для таблицы.</p>';
-  }
+  if (report.rows.length === 0) return '<p class="muted">В отчете нет строк для таблицы.</p>';
 
   return `
     <table>
@@ -59,36 +57,65 @@ function buildChart(report: VisualReport) {
       <h2>Цифры</h2>
       <ul>
         ${report.chart.map((item) => `
-          <li><strong>${escapeHtml(item.label)}:</strong> ${item.value} — ${escapeHtml(item.detail)}</li>
+          <li><strong>${escapeHtml(item.label)}:</strong> ${item.value} - ${escapeHtml(item.detail)}</li>
         `).join('')}
       </ul>
     </section>
   `;
 }
 
+function getTextRows(report: VisualReport) {
+  if (report.rows.length > 0) return report.rows;
+
+  const sectionRows = report.sections.flatMap((section) => (
+    section.items.map((item) => ({
+      action: 'Проверить',
+      fact: item,
+      source: section.title,
+      status: 'Инфо',
+    }))
+  ));
+
+  if (sectionRows.length > 0) return sectionRows;
+
+  return report.chart.map((item) => ({
+    action: item.detail,
+    fact: String(item.value),
+    source: item.label,
+    status: 'Цифра',
+  }));
+}
+
+function padCell(value: string, size: number) {
+  if (value.length > size) return `${value.slice(0, Math.max(0, size - 3))}...`;
+  return value.padEnd(size, ' ');
+}
+
 export function formatReportText(report: VisualReport) {
-  const lines = [
+  const headers = ['Раздел', 'Факт', 'Статус', 'Действие'];
+  const tableRows = getTextRows(report).map((row) => [row.source, row.fact, row.status, row.action]);
+  const widths = headers.map((header, index) => (
+    Math.min(28, Math.max(header.length, ...tableRows.map((row) => row[index].length)))
+  ));
+  const makeLine = (cells: string[]) => `| ${cells.map((cell, index) => padCell(cell, widths[index])).join(' | ')} |`;
+  const separator = `| ${widths.map((width) => '-'.repeat(width)).join(' | ')} |`;
+
+  return [
     report.title,
     '',
     `Совет AI: ${report.advice}`,
     '',
-    ...report.rows.map((row) => `${row.source}: ${row.fact}. Статус: ${row.status}. Действие: ${row.action}`),
-    ...report.sections.flatMap((section) => [
-      '',
-      section.title,
-      ...section.items.map((item) => `- ${item}`),
-    ]),
-    ...report.chart.map((item) => `${item.label}: ${item.value}. ${item.detail}`),
-  ];
-
-  return lines.filter(Boolean).join('\n');
+    makeLine(headers),
+    separator,
+    ...tableRows.map(makeLine),
+  ].join('\n');
 }
 
 export function printReportPdf(report: VisualReport) {
-  const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+  const printWindow = window.open('', '_blank');
   if (!printWindow) return false;
 
-  printWindow.document.write(`
+  const html = `
     <!doctype html>
     <html lang="ru">
       <head>
@@ -106,11 +133,23 @@ export function printReportPdf(report: VisualReport) {
           h2 { margin: 24px 0 10px; font-size: 18px; }
           p { margin: 0 0 14px; }
           table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-          th, td { padding: 10px; border: 1px solid #d9e1de; text-align: left; vertical-align: top; }
+          th, td {
+            padding: 10px;
+            border: 1px solid #d9e1de;
+            text-align: left;
+            vertical-align: top;
+            word-break: break-word;
+          }
           th { background: #e9f8ef; }
+          tr { break-inside: avoid; }
           ul { padding-left: 20px; }
           li { margin: 6px 0; }
-          .advice { padding: 14px; background: #e9f8ef; border: 1px solid #b7e4c7; border-radius: 8px; }
+          .advice {
+            padding: 14px;
+            background: #e9f8ef;
+            border: 1px solid #b7e4c7;
+            border-radius: 8px;
+          }
           .muted { color: #64706c; }
           @media print {
             body { padding: 18mm; }
@@ -126,12 +165,18 @@ export function printReportPdf(report: VisualReport) {
         ${buildChart(report)}
         <script>
           window.addEventListener('load', () => {
-            window.print();
+            setTimeout(() => {
+              window.focus();
+              window.print();
+            }, 250);
           });
         </script>
       </body>
     </html>
-  `);
+  `;
+
+  printWindow.document.open();
+  printWindow.document.write(html);
   printWindow.document.close();
   return true;
 }

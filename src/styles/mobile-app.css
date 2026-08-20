@@ -1018,6 +1018,41 @@
   color: #86efac;
 }
 
+.reports-preferences {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.reports-preferences span {
+  color: #f7f7f2;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.reports-preferences textarea {
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(12, 12, 12, 0.52);
+  color: #f7f7f2;
+  font: inherit;
+  line-height: 1.45;
+}
+
+.reports-preferences textarea:focus {
+  border-color: rgba(62, 229, 143, 0.52);
+  box-shadow: 0 0 0 3px rgba(62, 229, 143, 0.12);
+  outline: none;
+}
+
+.reports-preferences textarea::placeholder {
+  color: #858c88;
+}
+
 .reports-generate-button,
 .reports-download-button,
 .reports-share-button {
@@ -1624,19 +1659,33 @@
 .home-hook-workspace__try {
   justify-self: start;
   display: grid;
-  width: min(100%, 280px);
-  min-height: 72px;
-  background: #fff1cf;
-  color: #3a240c;
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(255, 241, 207, 0.28);
-  font-size: 20px;
-  line-height: 1.12;
+  place-items: center;
+  width: min(100%, 310px);
+  min-height: 86px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, #ffe75c 0%, #ff9f1c 48%, #ff4d2d 100%);
+  color: #1f1308;
+  box-shadow:
+    0 22px 42px rgba(255, 111, 33, 0.34),
+    0 10px 24px rgba(0, 0, 0, 0.3),
+    0 0 0 6px rgba(255, 159, 28, 0.14);
+  font-size: 25px;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.38);
   transform: translateX(-52px);
 }
 
 .home-hook-workspace__try:hover {
-  filter: brightness(1.03);
-  transform: translateX(-52px) translateY(-1px);
+  filter: saturate(1.1) brightness(1.05);
+  box-shadow:
+    0 28px 52px rgba(255, 111, 33, 0.44),
+    0 14px 30px rgba(0, 0, 0, 0.34),
+    0 0 0 8px rgba(255, 159, 28, 0.2);
+  transform: translateX(-52px) translateY(-3px) scale(1.02);
 }
 
 .friendly-empty {

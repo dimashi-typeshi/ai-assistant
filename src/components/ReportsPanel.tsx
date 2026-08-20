@@ -116,6 +116,7 @@ async function collectReportData(selected: SourceId[]) {
 export function ReportsPanel() {
   const [selected, setSelected] = useState<SourceId[]>(['requests', 'payments']);
   const [format, setFormat] = useState<ReportFormat>('table');
+  const [preferences, setPreferences] = useState('');
   const [report, setReport] = useState<VisualReport | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -137,6 +138,7 @@ export function ReportsPanel() {
         'Верни только валидный JSON без markdown и пояснений.',
         'Формат JSON: {"title":"...","advice":"один короткий совет до 140 символов","rows":[{"source":"...","fact":"...","status":"...","action":"..."}],"sections":[{"title":"...","items":["..."]}],"chart":[{"label":"...","value":1,"detail":"..."}]}.',
         formatInstruction,
+        preferences.trim() ? `Пожелания пользователя к отчету: ${preferences.trim()}` : 'Пожеланий пользователя к отчету нет.',
         reportData || 'В выбранных вкладках нет записей.',
       ].join('\n\n');
       setReport(parseVisualReport(await askBusinessAssistant(prompt)));
@@ -189,6 +191,15 @@ export function ReportsPanel() {
           </button>
         ))}
       </div>
+      <label className="reports-preferences">
+        <span>Пожелания к отчёту</span>
+        <textarea
+          onChange={(event) => setPreferences(event.target.value)}
+          placeholder="Например: отсортируй по дням, сгруппируй по месяцам, покажи только просроченные"
+          rows={3}
+          value={preferences}
+        />
+      </label>
       <button className="reports-generate-button" disabled={selected.length === 0 || isLoading} onClick={() => void generateReport()} type="button">
         {isLoading ? 'Генерируется...' : 'Сгенерировать'}
       </button>

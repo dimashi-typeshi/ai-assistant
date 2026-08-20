@@ -59,17 +59,30 @@ export function Auth({ onAuthenticated }: AuthProps) {
     setGoogleBusy(true);
     setMessage('');
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
+        queryParams: {
+          prompt: 'select_account',
+        },
         redirectTo: `${window.location.origin}/dashboard`,
+        skipBrowserRedirect: true,
       },
     });
 
     if (error) {
       setMessage(friendlyError(error.message));
       setGoogleBusy(false);
+      return;
     }
+
+    if (data.url) {
+      window.location.assign(data.url);
+      return;
+    }
+
+    setMessage('Не получилось открыть Google. Попробуй открыть сайт в Safari и войти снова.');
+    setGoogleBusy(false);
   }
 
   return (
